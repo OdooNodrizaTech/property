@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+import distritopostal_municipality
+import distritopostal_state
+import distritopostal_way
+import property_building_type
+import property_home_type
+import property_level
+import property_municipality
+import property_number
+import property_property
+import property_property_build_unit
+import property_state
+import property_town
+import property_transaction_type
+import property_use
+import property_way
+import property_way_area_report
+import property_way_area_report_detail
+import property_way_reference_sale
+import property_way_reference_sale_detail
+import property_way_type
+import property_way_type_report
+import property_way_type_report_detail
+import property_way_evolution_price
+import property_way_evolution_price_detail

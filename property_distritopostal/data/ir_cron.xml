@@ -1,0 +1,26 @@
+<openerp>
+    <data noupdate="1">
+        <record id="cron_check_municipalities_distritopostal" model="ir.cron">
+            <field name="name">Cron Check Municipalities (Distritopostal)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'distritopostal.municipality'" />
+            <field name="function" eval="'cron_check_municipalities_distritopostal'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_check_ways_distritopostal" model="ir.cron">
+            <field name="name">Cron Check Ways (Distritopostal)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'distritopostal.way'" />
+            <field name="function" eval="'cron_check_ways_distritopostal'" />
+            <field name="args" eval="" />
+        </record>                                                                    
+    </data>
+</openerp>

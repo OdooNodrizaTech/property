@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sedecatastro_provincia_admin,sedecatastro.provincia,model_sedecatastro_provincia,,1,1,1,1
+access_sedecatastro_provincia_group_user,sedecatastro.provincia.user,model_sedecatastro_provincia,base.group_user,1,1,1,1
+access_sedecatastro_municipio_admin,sedecatastro.municipio,model_sedecatastro_municipio,,1,1,1,1
+access_sedecatastro_municipio_group_user,sedecatastro.municipio.user,model_sedecatastro_municipio,base.group_user,1,1,1,1
+access_sedecatastro_numero_admin,sedecatastro.numero,model_sedecatastro_numero,,1,1,1,1
+access_sedecatastro_numero_group_user,sedecatastro.numero.user,model_sedecatastro_numero,base.group_user,1,1,1,1
+access_sedecatastro_via_admin,sedecatastro.via,model_sedecatastro_via,,1,1,1,1
+access_sedecatastro_via_group_user,sedecatastro.via.user,model_sedecatastro_via,base.group_user,1,1,1,1
+access_sedecatastro_inmueble_admin,sedecatastro.inmueble,model_sedecatastro_inmueble,,1,1,1,1
+access_sedecatastro_inmueble_group_user,sedecatastro.inmueble.user,model_sedecatastro_inmueble,base.group_user,1,1,1,1
+access_sedecatastro_inmueble_construccion_admin,sedecatastro.inmueble.construccion,model_sedecatastro_inmueble_construccion,,1,1,1,1
+access_sedecatastro_inmueble_construccion_group_user,sedecatastro.inmueble.construccion.user,model_sedecatastro_inmueble_construccion,base.group_user,1,1,1,1

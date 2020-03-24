@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_distritopostal_municipality_admin,distritopostal.municipality,model_distritopostal_municipality,,1,1,1,1
+access_distritopostal_municipality_group_user,distritopostal.municipality.user,model_distritopostal_municipality,base.group_user,1,1,1,1
+access_distritopostal_postalcode_admin,distritopostal.postalcode,model_distritopostal_postalcode,,1,1,1,1
+access_distritopostal_postalcode_group_user,distritopostal.postalcode.user,model_distritopostal_postalcode,base.group_user,1,1,1,1
+access_distritopostal_state_admin,distritopostal.state,model_distritopostal_state,,1,1,1,1
+access_distritopostal_state_group_user,distritopostal.state.user,model_distritopostal_state,base.group_user,1,1,1,1
+access_distritopostal_way_admin,distritopostal.way,model_distritopostal_way,,1,1,1,1
+access_distritopostal_way_group_user,distritopostal.way.user,model_distritopostal_way,base.group_user,1,1,1,1

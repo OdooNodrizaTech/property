@@ -1,0 +1,147 @@
+<openerp>
+    <data noupdate="1">                
+        <record id="cron_check_states" model="ir.cron">
+            <field name="name">Cron Check States (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.state'" />
+            <field name="function" eval="'cron_check_states'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_check_municipalities" model="ir.cron">
+            <field name="name">Cron Check Municipalities (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.municipality'" />
+            <field name="function" eval="'cron_check_municipalities'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_update_municipalities" model="ir.cron">
+            <field name="name">Cron Update Municipalities (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.municipality'" />
+            <field name="function" eval="'cron_update_municipalities'" />
+            <field name="args" eval="" />
+        </record>                
+        <record id="cron_check_towns" model="ir.cron">
+            <field name="name">Cron Check Towns (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.town'" />
+            <field name="function" eval="'cron_check_towns'" />
+            <field name="args" eval="" />
+        </record>        
+        <record id="cron_check_way_types" model="ir.cron">
+            <field name="name">Cron Check Way Types (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.way.type'" />
+            <field name="function" eval="'cron_check_way_types'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_check_ways" model="ir.cron">
+            <field name="name">Cron Check Ways (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.municipality'" />
+            <field name="function" eval="'cron_check_ways'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_update_ways" model="ir.cron">
+            <field name="name">Cron Update Ways (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.way'" />
+            <field name="function" eval="'cron_update_ways'" />
+            <field name="args" eval="" />
+        </record>        
+        <record id="cron_check_numbers" model="ir.cron">
+            <field name="name">Cron Check Numbers (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.number'" />
+            <field name="function" eval="'cron_check_numbers'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_check_properties" model="ir.cron">
+            <field name="name">Cron Check Properties (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.property'" />
+            <field name="function" eval="'cron_check_properties'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_check_properties_full_info" model="ir.cron">
+            <field name="name">Cron Check Properties Full Info (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.property'" />
+            <field name="function" eval="'cron_check_properties_full_info'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_check_ways_evolution_price" model="ir.cron">
+            <field name="name">Cron Check Ways Evolution Price (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.way.evolution.price'" />
+            <field name="function" eval="'cron_check_ways_evolution_price'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_check_ways_type_report" model="ir.cron">
+            <field name="name">Cron Check Ways Type Report (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.way.type.report'" />
+            <field name="function" eval="'cron_check_ways_type_report'" />
+            <field name="args" eval="" />
+        </record>
+        <record id="cron_check_ways_area_report" model="ir.cron">
+            <field name="name">Cron Check Ways Area Report (Property)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'property.way.area.report'" />
+            <field name="function" eval="'cron_check_ways_area_report'" />
+            <field name="args" eval="" />
+        </record>                                                                             
+    </data>
+</openerp>
