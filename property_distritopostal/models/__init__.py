@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import distritopostal_state
-import distritopostal_municipality
-import distritopostal_postalcode
-import distritopostal_way
+from . import distritopostal_state
+from . import distritopostal_municipality
+from . import distritopostal_postalcode
+from . import distritopostal_way

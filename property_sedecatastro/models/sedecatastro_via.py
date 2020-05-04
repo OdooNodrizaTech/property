@@ -168,8 +168,8 @@ class SedecatastroVia(models.Model):
         #return
         return return_item
         
-    @api.multi    
-    def cron_check_sedecatastro_vias(self, cr=None, uid=False, context=None):
+    @api.model    
+    def cron_check_sedecatastro_vias(self):
         _logger.info('cron_check_sedecatastro_vias')
         
         sedecatastro_municipio_ids = self.env['sedecatastro.municipio'].search([('full', '=', False)])

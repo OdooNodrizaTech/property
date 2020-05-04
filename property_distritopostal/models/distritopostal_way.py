@@ -26,8 +26,8 @@ class DistritopostalWay(models.Model):
         string='Name'
     )
     
-    @api.multi    
-    def cron_check_ways_distritopostal(self, cr=None, uid=False, context=None):
+    @api.model    
+    def cron_check_ways_distritopostal(self):
         _logger.info('cron_check_ways_distritopostal')
         #postalcode
         distritopostal_postalcode_ids = self.env['distritopostal.postalcode'].search([('full', '=', False)], limit=1000)

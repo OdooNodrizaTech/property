@@ -188,8 +188,8 @@ class SedecatastroInmueble(models.Model):
         #return
         return return_item
                 
-    @api.multi
-    def cron_check_sedecatastro_inmuebles(self, cr=None, uid=False, context=None):
+    @api.model
+    def cron_check_sedecatastro_inmuebles(self):
         _logger.info('cron_check_sedecatastro_inmuebles')                
         
         sedecatastro_numero_ids = self.env['sedecatastro.numero'].search([('full', '=', False)],limit=1000)
@@ -216,8 +216,8 @@ class SedecatastroInmueble(models.Model):
                 #Sleep 1 second to prevent error
                 time.sleep(1)
                 
-    @api.multi
-    def cron_check_sedecatastro_inmuebles_sin_datos(self, cr=None, uid=False, context=None):
+    @api.model
+    def cron_check_sedecatastro_inmuebles_sin_datos(self):
         _logger.info('cron_check_sedecatastro_inmuebles_sin_datos')                
         
         sedecatastro_inmueble_ids = self.env['sedecatastro.inmueble'].search([('full', '=', False)],limit=1000)

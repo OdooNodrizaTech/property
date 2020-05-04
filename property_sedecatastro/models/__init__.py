@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import sedecatastro_provincia
-import sedecatastro_municipio
-import sedecatastro_numero
-import sedecatastro_via
-import sedecatastro_inmueble
-import sedecatastro_inmueble_construccion
+from . import sedecatastro_provincia
+from . import sedecatastro_municipio
+from . import sedecatastro_numero
+from . import sedecatastro_via
+from . import sedecatastro_inmueble
+from . import sedecatastro_inmueble_construccion

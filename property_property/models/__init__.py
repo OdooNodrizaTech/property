@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
-import distritopostal_municipality
-import distritopostal_state
-import distritopostal_way
-import property_building_type
-import property_home_type
-import property_level
-import property_municipality
-import property_number
-import property_property
-import property_property_build_unit
-import property_state
-import property_town
-import property_transaction_type
-import property_use
-import property_way
-import property_way_area_report
-import property_way_area_report_detail
-import property_way_reference_sale
-import property_way_reference_sale_detail
-import property_way_type
-import property_way_type_report
-import property_way_type_report_detail
-import property_way_evolution_price
-import property_way_evolution_price_detail
+from . import distritopostal_municipality
+from . import distritopostal_state
+from . import distritopostal_way
+from . import property_building_type
+from . import property_home_type
+from . import property_level
+from . import property_municipality
+from . import property_number
+from . import property_property
+from . import property_property_build_unit
+from . import property_state
+from . import property_town
+from . import property_transaction_type
+from . import property_use
+from . import property_way
+from . import property_way_area_report
+from . import property_way_area_report_detail
+from . import property_way_reference_sale
+from . import property_way_reference_sale_detail
+from . import property_way_type
+from . import property_way_type_report
+from . import property_way_type_report_detail
+from . import property_way_evolution_price
+from . import property_way_evolution_price_detail

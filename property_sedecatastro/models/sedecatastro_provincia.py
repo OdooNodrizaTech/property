@@ -105,8 +105,8 @@ class SedecatastroProvincia(models.Model):
         #return
         return return_item            
     
-    @api.multi    
-    def cron_check_sedecatastro_provincias(self, cr=None, uid=False, context=None):
+    @api.model    
+    def cron_check_sedecatastro_provincias(self):
         _logger.info('cron_check_sedecatastro_provincias')                        
         #request
         url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/ConsultaProvincia'

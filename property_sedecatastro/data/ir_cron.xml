@@ -1,70 +1,75 @@
-<openerp>
-    <data noupdate="1">                
-        <record id="cron_check_sedecatastro_provincias" model="ir.cron">
-            <field name="name">Cron Check Sedecatastro Provincias</field>
-            <field name="active" eval="False" />
-            <field name="user_id" ref="base.user_root" />
-            <field name="interval_number">1</field>
-            <field name="interval_type">work_days</field>
-            <field name="numbercall">-1</field>
-            <field name="model" eval="'sedecatastro.provincia'" />
-            <field name="function" eval="'cron_check_sedecatastro_provincias'" />
-            <field name="args" eval="" />
-        </record>
-        <record id="cron_check_sedecatastro_municipios" model="ir.cron">
-            <field name="name">Cron Check Sedecatastro Municipios</field>
-            <field name="active" eval="False" />
-            <field name="user_id" ref="base.user_root" />
-            <field name="interval_number">1</field>
-            <field name="interval_type">work_days</field>
-            <field name="numbercall">-1</field>
-            <field name="model" eval="'sedecatastro.municipio'" />
-            <field name="function" eval="'cron_check_sedecatastro_municipios'" />
-            <field name="args" eval="" />
-        </record>
-        <record id="cron_check_sedecatastro_vias" model="ir.cron">
-            <field name="name">Cron Check Sedecatastro Vias</field>
-            <field name="active" eval="False" />
-            <field name="user_id" ref="base.user_root" />
-            <field name="interval_number">1</field>
-            <field name="interval_type">work_days</field>
-            <field name="numbercall">-1</field>
-            <field name="model" eval="'sedecatastro.via'" />
-            <field name="function" eval="'cron_check_sedecatastro_vias'" />
-            <field name="args" eval="" />
-        </record>
-        <record id="cron_check_sedecatastro_numeros" model="ir.cron">
-            <field name="name">Cron Check Sedecatastro Numeros</field>
-            <field name="active" eval="False" />
-            <field name="user_id" ref="base.user_root" />
-            <field name="interval_number">1</field>
-            <field name="interval_type">work_days</field>
-            <field name="numbercall">-1</field>
-            <field name="model" eval="'sedecatastro.numero'" />
-            <field name="function" eval="'cron_check_sedecatastro_numeros'" />
-            <field name="args" eval="" />
-        </record>
-        <record id="cron_check_sedecatastro_inmuebles" model="ir.cron">
-            <field name="name">Cron Check Sedecatastro Inmuebles</field>
-            <field name="active" eval="False" />
-            <field name="user_id" ref="base.user_root" />
-            <field name="interval_number">1</field>
-            <field name="interval_type">work_days</field>
-            <field name="numbercall">-1</field>
-            <field name="model" eval="'sedecatastro.inmueble'" />
-            <field name="function" eval="'cron_check_sedecatastro_inmuebles'" />
-            <field name="args" eval="" />
-        </record>
-        <record id="cron_check_sedecatastro_inmuebles_sin_datos" model="ir.cron">
-            <field name="name">Cron Check Sedecatastro Inmuebles Sin datos</field>
-            <field name="active" eval="False" />
-            <field name="user_id" ref="base.user_root" />
-            <field name="interval_number">1</field>
-            <field name="interval_type">work_days</field>
-            <field name="numbercall">-1</field>
-            <field name="model" eval="'sedecatastro.inmueble'" />
-            <field name="function" eval="'cron_check_sedecatastro_inmuebles_sin_datos'" />
-            <field name="args" eval="" />
-        </record>                        
-    </data>
-</openerp>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="cron_check_sedecatastro_provincias" forcecreate="True" model="ir.cron">
+        <field name="name">Cron Check Sedecatastro Provincias</field>
+        <field name="active" eval="False"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_sedecatastro_provincia"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_check_sedecatastro_provincias()</field>
+    </record>
+    <record id="cron_check_sedecatastro_municipios" forcecreate="True" model="ir.cron">
+        <field name="name">Cron Check Sedecatastro Municipios</field>
+        <field name="active" eval="False"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_sedecatastro_municipio"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_check_sedecatastro_municipios()</field>
+    </record>
+    <record id="cron_check_sedecatastro_vias" forcecreate="True" model="ir.cron">
+        <field name="name">Cron Check Sedecatastro Vias</field>
+        <field name="active" eval="False"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_sedecatastro_via"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_check_sedecatastro_vias()</field>
+    </record>
+    <record id="cron_check_sedecatastro_numeros" forcecreate="True" model="ir.cron">
+        <field name="name">Cron Check Sedecatastro Numeros</field>
+        <field name="active" eval="False"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_sedecatastro_numero"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_check_sedecatastro_numeros()</field>
+    </record>
+    <record id="cron_check_sedecatastro_inmuebles" forcecreate="True" model="ir.cron">
+        <field name="name">Cron Check Sedecatastro Inmuebles</field>
+        <field name="active" eval="False"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_sedecatastro_inmueble"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_check_sedecatastro_inmuebles()</field>
+    </record>
+    <record id="cron_check_sedecatastro_inmuebles_sin_datos" forcecreate="True" model="ir.cron">
+        <field name="name">Cron Check Sedecatastro Inmuebles Sin datos</field>
+        <field name="active" eval="False"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_sedecatastro_inmueble"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_check_sedecatastro_inmuebles_sin_datos()</field>
+    </record>
+</odoo>

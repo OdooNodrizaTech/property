@@ -111,8 +111,8 @@ class DistritopostalMunicipality(models.Model):
                 #update                                                
                 self.full = True
     
-    @api.multi    
-    def cron_check_municipalities_distritopostal(self, cr=None, uid=False, context=None):
+    @api.model    
+    def cron_check_municipalities_distritopostal(self):
         _logger.info('cron_check_municipalities_distritopostal')
         
         letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']        
