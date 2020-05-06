@@ -8,7 +8,7 @@
     'license': 'AGPL-3',
     'depends': ['base'],
     'external_dependencies': {
-        'python' : ['xmltodict'],
+        'python3' : ['xmltodict'],
     },
     'data': [
         'data/ir_cron.xml',
