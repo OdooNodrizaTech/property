@@ -4,11 +4,6 @@ from odoo import api, fields, models
 import logging
 _logger = logging.getLogger(__name__)
 
-import requests, xmltodict, json
-from datetime import datetime
-import pytz
-import time
-
 class PropertyWayTypeReportDetail(models.Model):
     _name = 'property.way.type.report.detail'
     _description = 'Property Way Type Report Detail'
