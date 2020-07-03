@@ -63,7 +63,7 @@ class PropertyWayReferenceSale(models.Model):
         url = 'https://www.bbva.es/ASO/TechArchitecture/grantingTicketsOauth/V01/'
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic SU1NQjAwMTpTajhCbGpRYw=='
+            'Authorization': 'Basic '+str(self.env['ir.config_parameter'].sudo().get_param('bbva_authorization_key'))
         }
         data_obj = {
             'grant_type': 'client_credentials'
