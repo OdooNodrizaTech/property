@@ -1,0 +1,500 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* property_sedecatastro
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0-20200521\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-21 09:32+0000\n"
+"PO-Revision-Date: 2020-07-21 09:32+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__debi_ant
+msgid "ANTIGUEDAD"
+msgstr "ANTIGÜEDAD"
+
+#. module: property_sedecatastro
+#: model:ir.cron,cron_name:property_sedecatastro.cron_check_sedecatastro_inmuebles
+#: model:ir.cron,cron_name:property_sedecatastro.cron_check_sedecatastro_inmuebles_sin_datos
+#: model:ir.cron,cron_name:property_sedecatastro.cron_check_sedecatastro_municipios
+#: model:ir.cron,cron_name:property_sedecatastro.cron_check_sedecatastro_numeros
+#: model:ir.cron,cron_name:property_sedecatastro.cron_check_sedecatastro_provincias
+#: model:ir.cron,cron_name:property_sedecatastro.cron_check_sedecatastro_vias
+msgid "Base: Auto-vacuum internal data"
+msgstr "Base: Limpieza automática de datos internos"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_via__dir_tv
+msgid "CODIFICACION DEL TIPO DE ViA (ANEXO I)"
+msgstr "CODIFICACIÓN DEL TIPO DE VÍA (ANEXO I)"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_municipio__locat_cd
+msgid "CODIGO DE LA DELEGACION MHAP"
+msgstr "CÓDIGO DE LA DELEGACIÓN MHAP"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_municipio__loine_cp
+msgid "CODIGO DE LA PROVINCIA"
+msgstr "CÓDIGO DE LA PROVINCIA"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_via__dir_cv
+msgid "CODIGO DE LA VIA SEGUN DGC"
+msgstr "CÓDIGO DE LA VÍA SEGÚN DGC"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_municipio__locat_cmc
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_municipio__loine_cm
+msgid "CODIGO DEL MUNICIPIO"
+msgstr "CÓDIGO DEL MUNICIPIO"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_provincia_cpine
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_via__loine_cp
+msgid "CODIGO INE DE LA PROVINCIA"
+msgstr "CÓDIGO INE DE LA PROVINCIA"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_via__loine_cm
+msgid "CODIGO INE DEL MUNICIPIO"
+msgstr "CÓDIGO INE DEL MUNICIPIO"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__debi_cpt
+msgid "COEFICIENTE DE PARTICIPACION"
+msgstr "COEFICIENTE DE PARTICIPACIÓN"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia_cpine
+msgid "Cpine"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__create_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__create_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__create_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__create_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia__create_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__create_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__create_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__create_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__create_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia__create_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: property_sedecatastro
+#: model:ir.cron,name:property_sedecatastro.cron_check_sedecatastro_inmuebles
+msgid "Cron Check Sedecatastro Inmuebles"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.cron,name:property_sedecatastro.cron_check_sedecatastro_inmuebles_sin_datos
+msgid "Cron Check Sedecatastro Inmuebles Sin datos"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.cron,name:property_sedecatastro.cron_check_sedecatastro_municipios
+msgid "Cron Check Sedecatastro Municipios"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.cron,name:property_sedecatastro.cron_check_sedecatastro_numeros
+msgid "Cron Check Sedecatastro Numeros"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.cron,name:property_sedecatastro.cron_check_sedecatastro_provincias
+msgid "Cron Check Sedecatastro Provincias"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.cron,name:property_sedecatastro.cron_check_sedecatastro_vias
+msgid "Cron Check Sedecatastro Vias"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_via__dir_nv
+msgid "DENOMINACION DE LA VIA SEGUN DGC"
+msgstr "DENOMINACIÓN DE LA VÍA SEGÚN DGC"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_municipio_nm
+msgid "DENOMINACION DEL MUNICIPIO SEGUN M. DE HACIENDA Y ADMINISTRACIONES PUBLICAS"
+msgstr "DENOMINACIÓN DEL MUNICIPIO SEGÚN M. DE HACIENDA Y ADMINISTRACIONES PÚBLICAS"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble_ldt
+msgid "DOMICILIO TRIBUTARIO NO ESTRUCTURADO (TEXTO)"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__date_last_check
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__date_last_check
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__date_last_check
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia__date_last_check
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__date_last_check
+msgid "Date Last Check"
+msgstr "Fecha última comprobación"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__debi_ant
+msgid "Debi Ant"
+msgstr "Debit Ant"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__debi_cpt
+msgid "Debi Cpt"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__debi_luso
+msgid "Debi Luso"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__debi_sfc
+msgid "Debi Sfc"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__dfcons_stl
+msgid "Dfcons Stl"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__dir_cv
+msgid "Dir Cv"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__dir_nv
+msgid "Dir Nv"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__dir_tv
+msgid "Dir Tv"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__display_name
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__display_name
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__display_name
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__display_name
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia__display_name
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__dt_lourb_loint_es
+msgid "Dt Lourb Loint Es"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__dt_lourb_loint_pt
+msgid "Dt Lourb Loint Pt"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__dt_lourb_loint_pu
+msgid "Dt Lourb Loint Pu"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble_construccion__dt_lourb_loint_es
+msgid "ESCLAERA"
+msgstr "ESCALERA"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero_finca
+msgid "Finca"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_full
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio_full
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero_full
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia_full
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via_full
+msgid "Full"
+msgstr "Completo"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__hoja_plano
+msgid "Hoja Plano"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via_id
+msgid "ID"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__idbi_cn
+msgid "Idbi Cn"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_ldt
+msgid "LDT"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble____last_update
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion____last_update
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio____last_update
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero____last_update
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia____last_update
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__last_number_know
+msgid "Last Number Know"
+msgstr "Último número conocido"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__write_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__write_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__write_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__write_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia__write_uid
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__write_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__write_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__write_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__write_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia__write_date
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion_lcd
+msgid "Lcd"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__locat_cd
+msgid "Locat Cd"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__locat_cmc
+msgid "Locat Cmc"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__loine_cm
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__loine_cm
+msgid "Loine Cm"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__loine_cp
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__loine_cp
+msgid "Loine Cp"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_provincia_np
+msgid "NOMBRE DE LA PROVINCIA"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_municipio__total_vias
+msgid "NUMERO DE ITEMS DEVUELTOS EN LA LISTA CALLEJERO"
+msgstr "NÚMERO DE ITEMS DEVUELTOS EN LA LISTA CALLEJERO"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio_nm
+msgid "Nm"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia_np
+msgid "Np"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero_numero
+msgid "Numero"
+msgstr "Número"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble_construccion__dt_lourb_loint_pt
+msgid "PLANTA"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__rc_pc1
+msgid "POSICIONES 1-7 DE LA REFERENCIA CATASTRAL (RC) DEL INMUEBLE"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__rc_car
+msgid "POSICIONES 15-19 DE LA RC (CARGO)"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__rc_pc2
+msgid "POSICIONES 8-14 DE LA RC DEL INMUEBLE"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__rc_cc1
+msgid "PRIMER DIGITO DE CONTROL DE LA RC"
+msgstr "PRIMER DÍGITO DE CONTROL DE LA RC"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble_construccion__dt_lourb_loint_pu
+msgid "PUERTA"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__rc_car
+msgid "Rc Car"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__rc_cc1
+msgid "Rc Cc1"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__rc_cc2
+msgid "Rc Cc2"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__rc_pc1
+msgid "Rc Pc1"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__rc_pc2
+msgid "Rc Pc2"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_referencia
+msgid "Referencia"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble_referencia
+msgid "Referencia Catastral (Concatenacion de todos los datos de rc)"
+msgstr "Referencia Catastral (Concatenación de todos los datos de rc)"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__debi_luso
+msgid "Residencial"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__rc_cc2
+msgid "SEGUNDO DIGITO DE CONTROL DE LA RC"
+msgstr "SEGUNDO DÍGITO DE CONTROL DE LA RC"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__debi_sfc
+msgid "SUPERFICIE"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble_construccion__dfcons_stl
+msgid "SUPERFICIE DE LOS ELEMENTOS COMUNES"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model,name:property_sedecatastro.model_sedecatastro_inmueble
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble_construccion__sedecatastro_inmueble_id
+msgid "Sedecatastro Inmueble"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model,name:property_sedecatastro.model_sedecatastro_inmueble_construccion
+msgid "Sedecatastro Inmueble Construccion"
+msgstr "Sedecatastro Inmueble Construcción"
+
+#. module: property_sedecatastro
+#: model:ir.model,name:property_sedecatastro.model_sedecatastro_municipio
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__sedecatastro_municipio_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__sedecatastro_municipio_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__sedecatastro_municipio_id
+msgid "Sedecatastro Municipio"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model,name:property_sedecatastro.model_sedecatastro_numero
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__sedecatastro_numero_id
+msgid "Sedecatastro Numero"
+msgstr "Sedecatastro Número"
+
+#. module: property_sedecatastro
+#: model:ir.model,name:property_sedecatastro.model_sedecatastro_provincia
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__sedecatastro_provincia_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__sedecatastro_provincia_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__sedecatastro_provincia_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_via__sedecatastro_provincia_id
+msgid "Sedecatastro Provincia"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model,name:property_sedecatastro.model_sedecatastro_via
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_inmueble__sedecatastro_via_id
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__sedecatastro_via_id
+msgid "Sedecatastro Via"
+msgstr "Sedecatastro Vía"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble__idbi_cn
+msgid "TIPO DE BIEN INMUEBLE"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_numero__total_inmuebles
+msgid "Total inmuebles"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_provincia__total_municipios
+msgid "Total municipios"
+msgstr ""
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,field_description:property_sedecatastro.field_sedecatastro_municipio__total_vias
+msgid "Total vias"
+msgstr "Total vÍas"
+
+#. module: property_sedecatastro
+#: model:ir.model.fields,help:property_sedecatastro.field_sedecatastro_inmueble_construccion_lcd
+msgid "USO DE LA UNIDAD CONSTRUCTIVA"
+msgstr ""
+

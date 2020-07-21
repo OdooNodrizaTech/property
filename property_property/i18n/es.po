@@ -1,0 +1,915 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* property_property
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0-20200521\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-21 09:31+0000\n"
+"PO-Revision-Date: 2020-07-21 09:31+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__average_price
+msgid "Average Price"
+msgstr "Precio medio"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__average_price_surface_area
+msgid "Average Price Surface Area"
+msgstr "Área de superficie de precio promedio"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__average_price_by_sqare_meter
+msgid "Average Price by Square Meter"
+msgstr "Precio promedio por metro cuadrado"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__average_surface_area
+msgid "Average Surface Area"
+msgstr "Área de superficie promedio"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail__average_price
+msgid "Avetage Price"
+msgstr "Precio promedio"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail__average_surface
+msgid "Avetage Surface"
+msgstr "Superficie promedio"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__average_surface_area
+msgid "Avetage Surface Area"
+msgstr "Área de superficie promedio"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__average_value
+msgid "Avetage Value"
+msgstr "Valor promedio"
+
+#. module: property_property
+#: selection:property.municipality,source:0
+#: selection:property.number,source:0
+#: selection:property.property,source:0
+#: selection:property.property.build.unit,source:0
+#: selection:property.state,source:0
+#: selection:property.town,source:0
+#: selection:property.way,source:0
+#: selection:property.way.area.report,source:0
+#: selection:property.way.evolution.price,source:0
+#: selection:property.way.reference.sale,source:0
+#: selection:property.way.type,source:0
+#: selection:property.way.type.report,source:0
+msgid "BBVA"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,cron_name:property_property.cron_check_municipalities
+#: model:ir.cron,cron_name:property_property.cron_check_numbers
+#: model:ir.cron,cron_name:property_property.cron_check_properties
+#: model:ir.cron,cron_name:property_property.cron_check_properties_full_info
+#: model:ir.cron,cron_name:property_property.cron_check_states
+#: model:ir.cron,cron_name:property_property.cron_check_towns
+#: model:ir.cron,cron_name:property_property.cron_check_way_types
+#: model:ir.cron,cron_name:property_property.cron_check_ways
+#: model:ir.cron,cron_name:property_property.cron_check_ways_area_report
+#: model:ir.cron,cron_name:property_property.cron_check_ways_evolution_price
+#: model:ir.cron,cron_name:property_property.cron_check_ways_type_report
+#: model:ir.cron,cron_name:property_property.cron_update_municipalities
+#: model:ir.cron,cron_name:property_property.cron_update_ways
+msgid "Base: Auto-vacuum internal data"
+msgstr "Base: Limpieza automática de datos internos"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__bedrooms_number
+msgid "Bedrooms Number"
+msgstr "Nº dormitorios"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail__beedroom_number
+msgid "Beedroom Number"
+msgstr "Nº dormitorios"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__building_year
+msgid "Building Year"
+msgstr "Año de construcción"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__built_surface_area
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__built_surface_area
+msgid "Built Surface Area"
+msgstr "Área de superficie construida"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property_coefficient
+msgid "Coefficient"
+msgstr "Coeficiente"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__commercials_number
+msgid "Commercials Number"
+msgstr "Nº de comerciales"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__companies_number
+msgid "Companies Number"
+msgstr "Nº de empresas"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_building_type__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_home_type__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_level__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_number__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_property__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_state__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_town__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_transaction_type__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_use__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_type__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report__create_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_building_type__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_home_type__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_level__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_number__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_property__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_state__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_town__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_transaction_type__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_use__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_type__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report__create_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_municipalities
+msgid "Cron Check Municipalities (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_numbers
+msgid "Cron Check Numbers (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_properties
+msgid "Cron Check Properties (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_properties_full_info
+msgid "Cron Check Properties Full Info (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_states
+msgid "Cron Check States (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_towns
+msgid "Cron Check Towns (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_way_types
+msgid "Cron Check Way Types (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_ways
+msgid "Cron Check Ways (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_ways_area_report
+msgid "Cron Check Ways Area Report (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_ways_evolution_price
+msgid "Cron Check Ways Evolution Price (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_check_ways_type_report
+msgid "Cron Check Ways Type Report (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_update_municipalities
+msgid "Cron Update Municipalities (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.cron,name:property_property.cron_update_ways
+msgid "Cron Update Ways (Property)"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__date_last_check
+#: model:ir.model.fields,field_description:property_property.field_property_number__date_last_check
+#: model:ir.model.fields,field_description:property_property.field_property_property__date_last_check
+#: model:ir.model.fields,field_description:property_property.field_property_state__date_last_check
+#: model:ir.model.fields,field_description:property_property.field_property_way__date_last_check
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__date_last_check
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price__date_last_check
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__date_last_check
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report__date_last_check
+msgid "Date Last Check"
+msgstr "Fecha última comprobación"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__description
+msgid "Description"
+msgstr "Descripción"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__detached_property_distribution_bank_offer
+msgid "Detached Property Distribution Bank Offer"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__detached_property_distribution_free_offer
+msgid "Detached Property Distribution Free Offer"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__detached_property_distribution_total
+msgid "Detached Property Distribution Total"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_building_type__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_home_type__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_level__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_number__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_property__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_state__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_town__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_transaction_type__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_use__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_type__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report__display_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_distritopostal_municipality
+msgid "Distritopostal Municipality"
+msgstr "Distritopostal Municipio"
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_distritopostal_state
+msgid "Distritopostal State"
+msgstr "Distritopostal Provincia"
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_distritopostal_way
+msgid "Distritopostal Way"
+msgstr "Distritopostal Vía"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit_door
+#: model:ir.model.fields,field_description:property_property.field_property_property_door
+msgid "Door"
+msgstr "Puerta"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_building_type__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_home_type__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_level__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_number__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_property__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_state__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_town__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_transaction_type__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_use__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_way__external_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_type__external_id
+msgid "External Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__flat_distribution_bank_offer
+msgid "Flat Distribution Bank Offer"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__flat_distribution_free_offer
+msgid "Flat Distribution Free Offer"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__flat_distribution_total
+msgid "Flat Distribution Total"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit_floor
+#: model:ir.model.fields,field_description:property_property.field_property_property_floor
+msgid "Floor"
+msgstr "Piso"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__floors_number
+msgid "Floors Number"
+msgstr "Nº de plantas"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_municipality_full
+#: model:ir.model.fields,field_description:property_property.field_property_number_full
+#: model:ir.model.fields,field_description:property_property.field_property_property_full
+#: model:ir.model.fields,field_description:property_property.field_property_state_full
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_full
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_full
+#: model:ir.model.fields,field_description:property_property.field_property_way_full
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__full
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_full
+msgid "Full"
+msgstr "Completo"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__full_ways
+msgid "Full full_ways"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__garages_number
+msgid "Garages Number"
+msgstr "Número de garajes"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__homes_sold
+msgid "Homes Sold"
+msgstr "Casas vendidas"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__house_holds_number
+msgid "House Holds Number"
+msgstr "Nº de reservas de la casa"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_building_type_id
+#: model:ir.model.fields,field_description:property_property.field_property_home_type_id
+#: model:ir.model.fields,field_description:property_property.field_property_level_id
+#: model:ir.model.fields,field_description:property_property.field_property_municipality_id
+#: model:ir.model.fields,field_description:property_property.field_property_number_id
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit_id
+#: model:ir.model.fields,field_description:property_property.field_property_property_id
+#: model:ir.model.fields,field_description:property_property.field_property_state_id
+#: model:ir.model.fields,field_description:property_property.field_property_town_id
+#: model:ir.model.fields,field_description:property_property.field_property_transaction_type_id
+#: model:ir.model.fields,field_description:property_property.field_property_use_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__id
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__id
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_id
+msgid "ID"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__inhabitants_house_hold_ratio
+msgid "Inhabitants House Hold Ratio"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_building_type____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_home_type____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_level____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_municipality____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_number____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_property____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_state____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_town____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_transaction_type____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_use____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way_type____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report____last_update
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_building_type__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_home_type__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_level__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_number__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_property__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_state__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_town__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_transaction_type__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_use__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_type__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report__write_uid
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_building_type__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_home_type__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_level__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_number__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_property__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_state__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_town__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_transaction_type__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_use__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_type__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report__write_date
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_municipality_latitude
+#: model:ir.model.fields,field_description:property_property.field_property_municipality_longitude
+#: model:ir.model.fields,field_description:property_property.field_property_state_latitude
+#: model:ir.model.fields,field_description:property_property.field_property_state_longitude
+#: model:ir.model.fields,field_description:property_property.field_property_way_latitude
+#: model:ir.model.fields,field_description:property_property.field_property_way_longitude
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__latitude
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__longitude
+msgid "Latitude"
+msgstr "Latitud"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__maximum_price
+msgid "Maximum Price"
+msgstr "Precio máximo"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__maximum_properties
+msgid "Maximum Properties"
+msgstr "Propietarios máximos"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__maximum_surface_area
+msgid "Maximum Surface Area"
+msgstr "Área de superficie máxima"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__minimum_price
+msgid "Minimum Price"
+msgstr "Precio mínimo"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__minimum_surface_area
+msgid "Minimum Surface Area"
+msgstr "Área de superficie mínima"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail_month
+msgid "Month"
+msgstr "Mes"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_building_type_name
+#: model:ir.model.fields,field_description:property_property.field_property_home_type_name
+#: model:ir.model.fields,field_description:property_property.field_property_level_name
+#: model:ir.model.fields,field_description:property_property.field_property_municipality_name
+#: model:ir.model.fields,field_description:property_property.field_property_number_name
+#: model:ir.model.fields,field_description:property_property.field_property_state_name
+#: model:ir.model.fields,field_description:property_property.field_property_town_name
+#: model:ir.model.fields,field_description:property_property.field_property_transaction_type_name
+#: model:ir.model.fields,field_description:property_property.field_property_use_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_name
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail_name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__office_numbers
+msgid "Office Numbers"
+msgstr "Nº de despachos"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail_percentage
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_percentage
+msgid "Percentage"
+msgstr "Porcentaje"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__plot_registry_id
+msgid "Plot Registry Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__plot_surface_area
+msgid "Plot Surface Area"
+msgstr "Área de superficie del plano"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way__postal_code
+msgid "Postal Code"
+msgstr "Código postal"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__price
+msgid "Price"
+msgstr "Precio"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__profesional_activities_number
+msgid "Profesional Activities Number"
+msgstr "Nº de actividades profesionales"
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_building_type
+msgid "Property Building Type"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__property_building_type_id
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__property_building_type_id
+msgid "Property Building Type Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_home_type
+msgid "Property Home Type"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price__property_home_type_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__property_home_type_id
+msgid "Property Home Type Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_level
+msgid "Property Level"
+msgstr "Nivel de propiedad"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__property_level_id
+msgid "Property Level Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_municipality
+#: model:ir.model.fields,field_description:property_property.field_distritopostal_municipality__property_municipality_id
+msgid "Property Municipality"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_town__property_municipality_id
+msgid "Property Municipality Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_number
+msgid "Property Number"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__property_number_id
+msgid "Property Number Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_property
+msgid "Property Property"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_property_build_unit
+msgid "Property Property Build Unit"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__property_property_id
+msgid "Property Property Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_state
+#: model:ir.model.fields,field_description:property_property.field_distritopostal_state__property_state_id
+msgid "Property State"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__property_state_id
+msgid "Property State Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way__property_town_id
+msgid "Property Town Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_transaction_type
+msgid "Property Transaction Type"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__property_transaction_type_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price__property_transaction_type_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__property_transaction_type_id
+msgid "Property Transaction Type Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_use
+msgid "Property Use"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__property_use_id
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit__property_use_id
+msgid "Property Use Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_distritopostal_way__property_way_id
+msgid "Property Way"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way_area_report
+msgid "Property Way Area Report"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way_area_report_detail
+msgid "Property Way Area Report Detail"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_detail__property_way_area_report_id
+msgid "Property Way Area Report Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way_evolution_price
+msgid "Property Way Evolution Price"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way_evolution_price_detail
+msgid "Property Way Evolution Price Detail"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail__property_way_evolution_price_id
+msgid "Property Way Evolution Price Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__property_way_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report__property_way_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price__property_way_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__property_way_id
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report__property_way_id
+msgid "Property Way Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way_reference_sale
+msgid "Property Way Reference Sale"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way_reference_sale_detail
+msgid "Property Way Reference Sale Detail"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__property_way_reference_sale_id
+msgid "Property Way Reference Sale Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way__property_way_type_id
+msgid "Property Way Type Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way_type_report
+msgid "Property Way Type Report"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way_type_report_detail
+msgid "Property Way Type Report Detail"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_detail__property_way_type_report_id
+msgid "Property Way Type Report Id"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_town
+msgid "Property town"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way
+msgid "Property way"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_property_way_type
+msgid "Property way Type"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_radius
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__radius
+msgid "Radius"
+msgstr "Radio"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__reform_year
+msgid "Reform Year"
+msgstr "Año de reforma"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_state__res_country_state_id
+msgid "Res Country State Id"
+msgstr "Provincia"
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_sedecatastro_municipio
+msgid "Sedecatastro Municipio"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model,name:property_property.model_sedecatastro_via
+msgid "Sedecatastro Via"
+msgstr "Sedecatastro Vía"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_municipality_source
+#: model:ir.model.fields,field_description:property_property.field_property_number_source
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit_source
+#: model:ir.model.fields,field_description:property_property.field_property_property_source
+#: model:ir.model.fields,field_description:property_property.field_property_state_source
+#: model:ir.model.fields,field_description:property_property.field_property_town_source
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_source
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale__source
+#: model:ir.model.fields,field_description:property_property.field_property_way_source
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_report_source
+#: model:ir.model.fields,field_description:property_property.field_property_way_type_source
+msgid "Source"
+msgstr "Origen"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_source
+msgid "Source2"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property_build_unit_stair
+#: model:ir.model.fields,field_description:property_property.field_property_property_stair
+msgid "Stair"
+msgstr "Escalera"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__surface_area
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_radius
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__surface_area
+msgid "Surface Area"
+msgstr "Área de superficie"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__toilets_number
+msgid "Toilets Number"
+msgstr "Nº baños"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_area_report_total
+msgid "Total"
+msgstr ""
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__total_build_units
+msgid "Total Build Units"
+msgstr "Total unidades constructivas"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way__total_numbers
+msgid "Total Numbers"
+msgstr "Números totales"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_number__total_properties
+msgid "Total Properties"
+msgstr "Total propiedades"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__total_ways
+msgid "Total Ways"
+msgstr "Total ways"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_state__total_municipalities
+msgid "Total municipalities"
+msgstr "Total municipios"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_municipality__total_towns
+msgid "Total towns"
+msgstr "Total pueblos"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__url_detail
+msgid "Url Detail"
+msgstr "Url detalle"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_reference_sale_detail__url_image
+msgid "Url Image"
+msgstr "Url imagen"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_way_evolution_price_detail_year
+msgid "Year"
+msgstr "Año"
+
+#. module: property_property
+#: model:ir.model.fields,field_description:property_property.field_property_property__year_old
+msgid "Year Old"
+msgstr "Edad"
+
