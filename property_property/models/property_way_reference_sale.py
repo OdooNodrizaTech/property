@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -70,7 +69,7 @@ class PropertyWayReferenceSale(models.Model):
             'grant_type': 'client_credentials'
         }
         response = requests.post(url, headers=headers, data=data_obj)
-        if response.status_code==200:        
+        if response.status_code == 200:
             response_json = json.loads(response.text)
             if 'access_token' in response_json:
                 tsec = str(response_json['access_token'])

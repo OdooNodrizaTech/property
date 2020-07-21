@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -37,25 +36,31 @@ class PropertyWay(models.Model):
         _logger.info('cron_check_towns')
         
         property_municipality_ids = self.env['property.municipality'].search([('full', '=', False)])
-        if len(property_municipality_ids)>0:
+        if property_municipality_ids:
             count = 0
             for property_municipality_id in property_municipality_ids:
                 count += 1
-                #action_get_towns
+                # action_get_towns
                 return_item = property_municipality_id.action_get_towns()[0]
                 if 'errors' in return_item:
-                    if return_item['errors']==True:
+                    if return_item['errors'] == True:
                         _logger.info(return_item)
-                        #fix
-                        if return_item['status_code']!=403:
+                        # fix
+                        if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
                             _logger.info('Raro que sea un 403 pero pasamos')
-                #_logger                
+                # _logger
                 percent = (float(count)/float(len(property_municipality_ids)))*100
-                percent = "{0:.2f}".format(percent)                    
-                _logger.info(str(property_municipality_id.name.encode('utf-8'))+' - '+str(percent)+'% ('+str(count)+'/'+str(len(property_municipality_ids))+')')                                        
-                #update
+                percent = "{0:.2f}".format(percent)
+                _logger.info('%s - %s%s (%s/%s)' % (
+                    property_municipality_id.name.encode('utf-8'),
+                    percent,
+                    '%',
+                    count,
+                    len(property_municipality_ids)
+                ))
+                # update
                 property_municipality_id.full = True
-                #Sleep 1 second to prevent error (if request)
+                # Sleep 1 second to prevent error (if request)
                 time.sleep(1)    

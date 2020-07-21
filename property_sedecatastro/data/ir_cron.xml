@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
+
     <record id="cron_check_sedecatastro_provincias" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Sedecatastro Provincias</field>
         <field name="active" eval="False"/>
@@ -12,6 +13,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_sedecatastro_provincias()</field>
     </record>
+
     <record id="cron_check_sedecatastro_municipios" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Sedecatastro Municipios</field>
         <field name="active" eval="False"/>
@@ -24,6 +26,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_sedecatastro_municipios()</field>
     </record>
+
     <record id="cron_check_sedecatastro_vias" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Sedecatastro Vias</field>
         <field name="active" eval="False"/>
@@ -36,6 +39,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_sedecatastro_vias()</field>
     </record>
+
     <record id="cron_check_sedecatastro_numeros" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Sedecatastro Numeros</field>
         <field name="active" eval="False"/>
@@ -48,6 +52,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_sedecatastro_numeros()</field>
     </record>
+
     <record id="cron_check_sedecatastro_inmuebles" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Sedecatastro Inmuebles</field>
         <field name="active" eval="False"/>
@@ -60,6 +65,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_sedecatastro_inmuebles()</field>
     </record>
+
     <record id="cron_check_sedecatastro_inmuebles_sin_datos" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Sedecatastro Inmuebles Sin datos</field>
         <field name="active" eval="False"/>
@@ -72,4 +78,5 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_sedecatastro_inmuebles_sin_datos()</field>
     </record>
+
 </odoo>

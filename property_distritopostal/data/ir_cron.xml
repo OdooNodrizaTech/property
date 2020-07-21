@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
+
     <record id="cron_check_municipalities_distritopostal" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Municipalities (Distritopostal)</field>
         <field name="active" eval="False"/>
@@ -12,6 +13,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_municipalities_distritopostal()</field>
     </record>
+
     <record id="cron_check_ways_distritopostal" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Ways (Distritopostal)</field>
         <field name="active" eval="False"/>
@@ -24,4 +26,5 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_ways_distritopostal()</field>
     </record>
+
 </odoo>

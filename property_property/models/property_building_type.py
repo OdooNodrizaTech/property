@@ -1,14 +1,7 @@
-# -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
 
-import logging
-_logger = logging.getLogger(__name__)
+from odoo import fields, models
 
-import requests, xmltodict, json
-from datetime import datetime
-import pytz
-import time
 
 class PropertyBuildingType(models.Model):
     _name = 'property.building.type'

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -30,28 +29,50 @@ class DistritopostalWay(models.Model):
     @api.model    
     def cron_check_ways_distritopostal(self):
         _logger.info('cron_check_ways_distritopostal')
-        #postalcode
-        distritopostal_postalcode_ids = self.env['distritopostal.postalcode'].search([('full', '=', False)], limit=1000)
-        if len(distritopostal_postalcode_ids)>0:
+        # postalcode
+        distritopostal_postalcode_ids = self.env['distritopostal.postalcode'].search(
+            [
+                ('full', '=', False)
+            ],
+            limit=1000
+        )
+        if distritopostal_postalcode_ids:
             count = 0
             for distritopostal_postalcode_id in distritopostal_postalcode_ids:
                 count += 1
-                #action_get_ways
+                # action_get_ways
                 distritopostal_postalcode_id.action_get_ways()[0]
-                #_logger                
+                # _logger
                 percent = (float(count)/float(len(distritopostal_postalcode_ids)))*100
-                percent = "{0:.2f}".format(percent)                    
-                _logger.info(str(distritopostal_postalcode_id.url)+' - '+str(percent)+'% ('+str(count)+'/'+str(len(distritopostal_postalcode_ids))+')')
-        #municipality
-        distritopostal_municipality_ids = self.env['distritopostal.municipality'].search([('full', '=', False)], limit=1000)
+                percent = "{0:.2f}".format(percent)
+                _logger.info('%s- %s %s (%s/%s)' % (
+                    distritopostal_postalcode_id.url,
+                    percent,
+                    '%',
+                    count,
+                    len(distritopostal_postalcode_ids)
+                ))
+        # municipality
+        distritopostal_municipality_ids = self.env['distritopostal.municipality'].search(
+            [
+                ('full', '=', False)
+            ],
+            limit=1000
+        )
         _logger.info(len(distritopostal_municipality_ids))
-        if len(distritopostal_municipality_ids)>0:
+        if distritopostal_municipality_ids:
             count = 0
             for distritopostal_municipality_id in distritopostal_municipality_ids:
                 count += 1
-                #action_get_ways                
+                # action_get_ways
                 distritopostal_municipality_id.action_get_ways()[0]
-                #_logger                
+                # _logger
                 percent = (float(count)/float(len(distritopostal_municipality_ids)))*100
-                percent = "{0:.2f}".format(percent)                    
-                _logger.info(str(distritopostal_municipality_id.url)+' - '+str(percent)+'% ('+str(count)+'/'+str(len(distritopostal_municipality_ids))+')')                                                                
+                percent = "{0:.2f}".format(percent)
+                _logger.info('%s- %s %s (%s/%s)' % (
+                    distritopostal_municipality_id.url,
+                    percent,
+                    '%',
+                    count,
+                    len(distritopostal_municipality_ids)
+                ))

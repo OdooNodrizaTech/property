@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 #https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=Consulta_DNPRC
 from odoo import api, fields, models
@@ -89,15 +88,15 @@ class SedecatastroInmueble(models.Model):
     @api.one    
     def action_get_info_sedecatastro(self):
         current_date = datetime.now()
-        #return
+        # return
         return_item = {
             'errors': False,
             'status_code': 200,
             'error': ''
         }
-        #fields_to_create_reference
+        # fields_to_create_reference
         fields_to_create_reference = ['rc_pc1', 'rc_pc2', 'rc_car', 'rc_cc1', 'rc_cc2']
-        #request
+        # request
         url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/Consulta_DNPRC'
         data_obj = {
             'Provincia': self.sedecatastro_provincia_id.np, 
@@ -105,75 +104,75 @@ class SedecatastroInmueble(models.Model):
             'RC': str(self.referencia),
         }                 
         response = requests.post(url, data=data_obj)        
-        if response.status_code==200:
+        if response.status_code == 200:
             xmltodict_response = xmltodict.parse(response.text)
             inmuebles = json.loads(json.dumps(xmltodict_response))            
             if 'consulta_dnp' in inmuebles:
                 if 'control' in inmuebles['consulta_dnp']:
-                    if inmuebles['consulta_dnp']['control']['cudnp']=='1':
+                    if inmuebles['consulta_dnp']['control']['cudnp'] == '1':
                         #inmueble y toda la info
                         if 'bico' in inmuebles['consulta_dnp']:
                             _logger.info('ok, es solo 1 inmueble con la info completa')
                             
                             if 'bi' in inmuebles['consulta_dnp']['bico']:
-                                #ldt
+                                # ldt
                                 self.ldt = str(inmuebles['consulta_dnp']['bico']['bi']['ldt'].encode('utf-8'))
-                                #idbi
+                                # idbi
                                 if 'idbi' in inmuebles['consulta_dnp']['bico']['bi']:
                                     self.idbi_cn = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['cn'])
-                                    #rc
+                                    # rc
                                     if 'rc' in inmuebles['consulta_dnp']['bico']['bi']['idbi']:
                                         self.rc_pc1 = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['pc1'])
                                         self.rc_pc2 = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['pc2'])
                                         self.rc_car = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['car'])
                                         self.rc_cc1 = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['cc1'])
                                         self.rc_cc2 = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['cc2'])
-                                #debi
+                                # debi
                                 if 'debi' in inmuebles['consulta_dnp']['bico']['bi']:
-                                    #luso
+                                    # luso
                                     if 'luso' in inmuebles['consulta_dnp']['bico']['bi']['debi']:
                                         self.debi_luso = str(inmuebles['consulta_dnp']['bico']['bi']['debi']['luso'].encode('utf-8'))
-                                    #sfc
+                                    # sfc
                                     if 'sfc' in inmuebles['consulta_dnp']['bico']['bi']['debi']:
                                         self.debi_sfc = int(inmuebles['consulta_dnp']['bico']['bi']['debi']['sfc'])
-                                    #cpt
+                                    # cpt
                                     if 'cpt' in inmuebles['consulta_dnp']['bico']['bi']['debi']:
                                         self.debi_cpt = str(inmuebles['consulta_dnp']['bico']['bi']['debi']['cpt'].replace(',', '.'))
-                                    #ant
+                                    # ant
                                     if 'ant' in inmuebles['consulta_dnp']['bico']['bi']['debi']:
                                         self.debi_ant = int(inmuebles['consulta_dnp']['bico']['bi']['debi']['ant'])                                
-                                #lcons
+                                # lcons
                                 if 'lcons' in inmuebles['consulta_dnp']['bico']:
                                     if 'cons' in inmuebles['consulta_dnp']['bico']['lcons']:
-                                        #fix multi items
-                                        if type(inmuebles['consulta_dnp']['bico']['lcons']['cons'])==dict:
+                                        # fix multi items
+                                        if type(inmuebles['consulta_dnp']['bico']['lcons']['cons']) == dict:
                                             inmuebles['consulta_dnp']['bico']['lcons']['cons'] = [inmuebles['consulta_dnp']['bico']['lcons']['cons']]
-                                        #for
+                                        # for
                                         for cons_item in inmuebles['consulta_dnp']['bico']['lcons']['cons']:
-                                            #cals
-                                            sedecatastro_inmueble_construccion_vals = {
+                                            # cals
+                                            vals = {
                                                 'sedecatastro_inmueble_id': self.id,
                                                 'lcd': str(cons_item['lcd'])
                                             }
-                                            #dt
+                                            # dt
                                             if 'dt' in cons_item:
                                                 if 'lourb' in cons_item['dt']:
                                                     if 'loint' in cons_item['dt']['lourb']:
-                                                        #es
+                                                        # es
                                                         if 'es' in cons_item['dt']['lourb']['loint']:
-                                                            sedecatastro_inmueble_construccion_vals['dt_lourb_loint_es'] = int(cons_item['dt']['lourb']['loint']['es'])
-                                                        #pt
+                                                            vals['dt_lourb_loint_es'] = int(cons_item['dt']['lourb']['loint']['es'])
+                                                        # pt
                                                         if 'pt' in cons_item['dt']['lourb']['loint']:
-                                                            sedecatastro_inmueble_construccion_vals['dt_lourb_loint_pt'] = str(cons_item['dt']['lourb']['loint']['pt'])
-                                                        #pu
+                                                            vals['dt_lourb_loint_pt'] = str(cons_item['dt']['lourb']['loint']['pt'])
+                                                        # pu
                                                         if 'pu' in cons_item['dt']['lourb']['loint']:
-                                                            sedecatastro_inmueble_construccion_vals['dt_lourb_loint_pu'] = str(cons_item['dt']['lourb']['loint']['pu'])
-                                            #dfcons
+                                                            vals['dt_lourb_loint_pu'] = str(cons_item['dt']['lourb']['loint']['pu'])
+                                            # dfcons
                                             if 'dfcons' in cons_item:
-                                                sedecatastro_inmueble_construccion_vals['dfcons_stl'] = int(cons_item['dfcons']['stl'])
-                                            #create
-                                            sedecatastro_inmueble_construccion_obj = self.env['sedecatastro.inmueble.construccion'].sudo().create(sedecatastro_inmueble_construccion_vals)                        
-                        #finall_thins
+                                                vals['dfcons_stl'] = int(cons_item['dfcons']['stl'])
+                                            # create
+                                            self.env['sedecatastro.inmueble.construccion'].sudo().create(vals)
+                        # finall_thins
                         self.full = True
                         self.date_last_check = current_date.strftime("%Y-%m-%d")                                            
         else:
@@ -186,61 +185,83 @@ class SedecatastroInmueble(models.Model):
                     'text': response.text
                 }
             }            
-        #return
+        # return
         return return_item
                 
     @api.model
     def cron_check_sedecatastro_inmuebles(self):
         _logger.info('cron_check_sedecatastro_inmuebles')                
         
-        sedecatastro_numero_ids = self.env['sedecatastro.numero'].search([('full', '=', False)],limit=1000)
-        if len(sedecatastro_numero_ids)>0:
+        sedecatastro_numero_ids = self.env['sedecatastro.numero'].search(
+            [
+                ('full', '=', False)
+            ],
+            limit=1000
+        )
+        if sedecatastro_numero_ids:
             count = 0
             for sedecatastro_numero_id in sedecatastro_numero_ids:
                 count += 1
-                #action_get_numeros_sedecatastro
+                # action_get_numeros_sedecatastro
                 return_item = sedecatastro_numero_id.action_get_inmuebles_sedecatastro()[0]
                 if 'errors' in return_item:
-                    if return_item['errors']==True:
+                    if return_item['errors'] == True:
                         _logger.info(return_item)
-                        #fix
-                        if return_item['status_code']!=403:
+                        # fix
+                        if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
                             _logger.info('Raro que sea un 403 pero pasamos')
-                #_logger.info(sedecatastro_numero_id.id)
+                # _logger.info(sedecatastro_numero_id.id)
                 percent = (float(count)/float(len(sedecatastro_numero_ids)))*100
-                percent = "{0:.2f}".format(percent)                    
-                _logger.info(str(sedecatastro_numero_id.id)+' - '+str(percent)+'% ('+str(count)+'/'+str(len(sedecatastro_numero_ids))+')')                
-                #update
+                percent = "{0:.2f}".format(percent)
+                _logger.info('%s - %s%s (%s/%s)' % (
+                    sedecatastro_numero_id.id,
+                    percent,
+                    '%',
+                    count,
+                    len(sedecatastro_numero_ids)
+                ))
+                # update
                 sedecatastro_numero_id.full = True
-                #Sleep 1 second to prevent error
+                # Sleep 1 second to prevent error
                 time.sleep(1)
                 
     @api.model
     def cron_check_sedecatastro_inmuebles_sin_datos(self):
         _logger.info('cron_check_sedecatastro_inmuebles_sin_datos')                
         
-        sedecatastro_inmueble_ids = self.env['sedecatastro.inmueble'].search([('full', '=', False)],limit=1000)
-        if len(sedecatastro_inmueble_ids)>0:
+        sedecatastro_inmueble_ids = self.env['sedecatastro.inmueble'].search(
+            [
+                ('full', '=', False)
+            ],
+            limit=1000
+        )
+        if sedecatastro_inmueble_ids:
             count = 0
             for sedecatastro_inmueble_id in sedecatastro_inmueble_ids:
                 count += 1
-                #action_get_info_sedecatastro
+                # action_get_info_sedecatastro
                 return_item = sedecatastro_inmueble_id.action_get_info_sedecatastro()[0]
                 if 'errors' in return_item:
-                    if return_item['errors']==True:
+                    if return_item['errors'] == True:
                         _logger.info(return_item)
-                        #fix
-                        if return_item['status_code']!=403:
+                        # fix
+                        if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
                             _logger.info('Raro que sea un 403 pero pasamos')
-                #_logger.info(sedecatastro_inmueble_id.id)
+                # _logger.info(sedecatastro_inmueble_id.id)
                 percent = (float(count)/float(len(sedecatastro_inmueble_ids)))*100
-                percent = "{0:.2f}".format(percent)                    
-                _logger.info(str(sedecatastro_inmueble_id.id)+' - '+str(percent)+'% ('+str(count)+'/'+str(len(sedecatastro_inmueble_ids))+')')                
-                #update
+                percent = "{0:.2f}".format(percent)
+                _logger.info('%s - %s%s (%s/%s)' % (
+                    sedecatastro_inmueble_id.id,
+                    percent,
+                    '%',
+                    count,
+                    len(sedecatastro_inmueble_ids)
+                ))
+                # update
                 sedecatastro_inmueble_id.full = True
-                #Sleep 1 second to prevent error
+                # Sleep 1 second to prevent error
                 time.sleep(1)                

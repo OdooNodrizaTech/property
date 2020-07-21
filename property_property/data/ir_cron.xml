@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
+
     <record id="cron_check_states" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check States (Property)</field>
         <field name="active" eval="False"/>
@@ -12,6 +13,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_states()</field>
     </record>
+
     <record id="cron_check_municipalities" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Municipalities (Property)</field>
         <field name="active" eval="False"/>
@@ -24,6 +26,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_municipalities()</field>
     </record>
+
     <record id="cron_update_municipalities" forcecreate="True" model="ir.cron">
         <field name="name">Cron Update Municipalities (Property)</field>
         <field name="active" eval="False"/>
@@ -36,6 +39,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_update_municipalities()</field>
     </record>
+
     <record id="cron_check_towns" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Towns (Property)</field>
         <field name="active" eval="False"/>
@@ -48,6 +52,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_towns()</field>
     </record>
+
     <record id="cron_check_way_types" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Way Types (Property)</field>
         <field name="active" eval="False"/>
@@ -60,6 +65,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_way_types()</field>
     </record>
+
     <record id="cron_check_ways" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Ways (Property)</field>
         <field name="active" eval="False"/>
@@ -72,6 +78,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_ways()</field>
     </record>
+
     <record id="cron_update_ways" forcecreate="True" model="ir.cron">
         <field name="name">Cron Update Ways (Property)</field>
         <field name="active" eval="False"/>
@@ -84,6 +91,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_update_ways()</field>
     </record>
+
     <record id="cron_check_numbers" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Numbers (Property)</field>
         <field name="active" eval="False"/>
@@ -96,6 +104,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_numbers()</field>
     </record>
+
     <record id="cron_check_properties" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Properties (Property)</field>
         <field name="active" eval="False"/>
@@ -108,6 +117,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_properties()</field>
     </record>
+
     <record id="cron_check_properties_full_info" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Properties Full Info (Property)</field>
         <field name="active" eval="False"/>
@@ -120,6 +130,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_properties_full_info()</field>
     </record>
+
     <record id="cron_check_ways_evolution_price" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Ways Evolution Price (Property)</field>
         <field name="active" eval="False"/>
@@ -132,6 +143,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_ways_evolution_price()</field>
     </record>
+
     <record id="cron_check_ways_type_report" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Ways Type Report (Property)</field>
         <field name="active" eval="False"/>
@@ -144,6 +156,7 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_ways_type_report()</field>
     </record>
+
     <record id="cron_check_ways_area_report" forcecreate="True" model="ir.cron">
         <field name="name">Cron Check Ways Area Report (Property)</field>
         <field name="active" eval="False"/>

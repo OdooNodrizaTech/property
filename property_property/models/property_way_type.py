@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -31,13 +30,13 @@ class PropertyWayType(models.Model):
     @api.multi    
     def cron_check_way_types(self, cr=None, uid=False, context=None):
         _logger.info('cron_check_way_types')
-        #requests                         
+        # requests
         url = 'https://www.bbva.es/ASO/streetMap/V02/wayTypes/'
         response = requests.get(url=url)
-        if response.status_code==200:
+        if response.status_code == 200:
             response_json = json.loads(response.text)
             if 'wayTypes' in response_json:
-                if len(response_json['wayTypes'])>0:
+                if len(response_json['wayTypes']) > 0:
                     for way_type in response_json['wayTypes']:
                         if 'id' in way_type:
                             property_way_type_ids = self.env['property.way.type'].search(
@@ -46,12 +45,12 @@ class PropertyWayType(models.Model):
                                     ('external_id', '=', str(way_type['id']))
                                 ]
                             )
-                            if len(property_way_type_ids)==0:
-                                #creamos
-                                property_way_type_vals = {
+                            if len(property_way_type_ids) == 0:
+                                # creamos
+                                vals = {
                                     'external_id': str(way_type['id']),
                                     'name': str(way_type['name'].encode('utf-8')),
                                     'source': 'bbva'
                                 }
-                                #create
-                                property_way_type_obj = self.env['property.way.type'].sudo().create(property_way_type_vals)                
+                                # create
+                                self.env['property.way.type'].sudo().create(vals)

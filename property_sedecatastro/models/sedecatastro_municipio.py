@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 #https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaMunicipio
 from odoo import api, fields, models
@@ -52,13 +51,13 @@ class SedecatastroMunicipio(models.Model):
     @api.one    
     def action_get_vias_sedecatastro(self):
         current_date = datetime.now()
-        #return
+        # return
         return_item = {
             'errors': False,
             'status_code': 200,
             'error': ''
         }
-        #request
+        # request
         url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/ConsultaVia'
         data_obj = {
             'Provincia': self.sedecatastro_provincia_id.np, 
@@ -67,20 +66,20 @@ class SedecatastroMunicipio(models.Model):
             'NombreVia': ''
         }                  
         response = requests.post(url, data=data_obj)        
-        if response.status_code==200:
+        if response.status_code == 200:
             xmltodict_response = xmltodict.parse(response.text)
             vias = json.loads(json.dumps(xmltodict_response))            
             if 'consulta_callejero' in vias:
                 if 'callejero' in vias['consulta_callejero']:
                     if 'calle' in vias['consulta_callejero']['callejero']:
-                        #total_vias
+                        # total_vias
                         if 'control' in vias['consulta_callejero']:
                             if 'cuca' in vias['consulta_callejero']['control']:
                                 self.total_vias = vias['consulta_callejero']['control']['cuca']
-                                #Fix 1
-                                if vias['consulta_callejero']['control']['cuca']=="1":
+                                # Fix 1
+                                if vias['consulta_callejero']['control']['cuca'] == "1":
                                     vias['consulta_callejero']['callejero']['calle'] = [vias['consulta_callejero']['callejero']['calle']]
-                        #for
+                        # for
                         for calle_item in vias['consulta_callejero']['callejero']['calle']:
                             sedecatastro_via_ids = self.env['sedecatastro.via'].search(
                                 [
@@ -88,12 +87,12 @@ class SedecatastroMunicipio(models.Model):
                                     ('dir_cv', '=', str(calle_item['dir']['cv']))
                                 ]
                             )
-                            if len(sedecatastro_via_ids)==0:
-                                #Fix dir tv
+                            if len(sedecatastro_via_ids) == 0:
+                                # Fix dir tv
                                 if type(calle_item['dir']['tv']) is dict:
                                     calle_item['dir']['tv'] = ''                                        
-                                #creamos
-                                sedecatastro_via_vals = {
+                                # creamos
+                                vals = {
                                     'sedecatastro_provincia_id': self.sedecatastro_provincia_id.id,
                                     'sedecatastro_municipio_id': self.id,
                                     'loine_cp': str(calle_item['loine']['cp']),
@@ -102,8 +101,8 @@ class SedecatastroMunicipio(models.Model):
                                     'dir_tv': str(calle_item['dir']['tv'].encode('utf-8')),
                                     'dir_nv': str(calle_item['dir']['nv'].encode('utf-8')),                                        
                                 }                                    
-                                sedecatastro_via_obj = self.env['sedecatastro.via'].sudo().create(sedecatastro_via_vals)
-                        #update date_last_check
+                                self.env['sedecatastro.via'].sudo().create(vals)
+                        # update date_last_check
                         self.date_last_check = current_date.strftime("%Y-%m-%d")
             else:
                 return {
@@ -125,33 +124,43 @@ class SedecatastroMunicipio(models.Model):
                     'text': response.text
                 }
             }
-        #return
+        # return
         return return_item             
     
     @api.model    
     def cron_check_sedecatastro_municipios(self):
         _logger.info('cron_check_sedecatastro_municipios')
         
-        sedecatastro_provincia_ids = self.env['sedecatastro.provincia'].search([('full', '=', False)])
-        if len(sedecatastro_provincia_ids)>0:
+        sedecatastro_provincia_ids = self.env['sedecatastro.provincia'].search(
+            [
+                ('full', '=', False)
+            ]
+        )
+        if sedecatastro_provincia_ids:
             count = 0
             for sedecatastro_provincia_id in sedecatastro_provincia_ids:
                 count += 1
-                #action_get_municipios_sedecatastro
+                # action_get_municipios_sedecatastro
                 return_item = sedecatastro_provincia_id.action_get_municipios_sedecatastro()[0]
                 if 'errors' in return_item:
-                    if return_item['errors']==True:
+                    if return_item['errors'] == True:
                         _logger.info(return_item)
-                        #fix
-                        if return_item['status_code']!=403:
+                        # fix
+                        if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
                             _logger.info('Raro que sea un 403 pero pasamos')
-                #_logger                
+                # _logger
                 percent = (float(count)/float(len(sedecatastro_provincia_ids)))*100
-                percent = "{0:.2f}".format(percent)                    
-                _logger.info(str(sedecatastro_provincia_id.np.encode('utf-8'))+' - '+str(percent)+'% ('+str(count)+'/'+str(len(sedecatastro_provincia_ids))+')')                                        
-                #update
+                percent = "{0:.2f}".format(percent)
+                _logger.info('%s - %s%s (%s/%s)' % (
+                    sedecatastro_provincia_id.np.encode('utf-8'),
+                    percent,
+                    '%',
+                    count,
+                    len(sedecatastro_provincia_ids)
+                ))
+                # update
                 sedecatastro_provincia_id.full = True
-                #Sleep 1 second to prevent error
+                # Sleep 1 second to prevent error
                 time.sleep(1)                                                

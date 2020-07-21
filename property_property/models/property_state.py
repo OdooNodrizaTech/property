@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
@@ -50,33 +49,47 @@ class PropertyState(models.Model):
     @api.one    
     def action_get_municipalities(self):
         current_date = datetime.now()
-        #return
+        # return
         return_item = {
             'errors': False,
             'status_code': 200,
             'error': ''
         }
-        #distritopostal.state
-        distritopostal_state_ids = self.env['distritopostal.state'].search([('property_state_id', '=', self.id)])
-        if len(distritopostal_state_ids)>0:
+        # distritopostal.state
+        distritopostal_state_ids = self.env['distritopostal.state'].search(
+            [
+                ('property_state_id', '=', self.id)
+            ]
+        )
+        if distritopostal_state_ids:
             distritopostal_state_id = distritopostal_state_ids[0]
-            distritopostal_municipality_ids = self.env['distritopostal.municipality'].search([('distritopostal_state_id', '=', distritopostal_state_id.id)])
-            #operations
-            if len(distritopostal_municipality_ids)>0:
+            distritopostal_municipality_ids = self.env['distritopostal.municipality'].search(
+                [
+                    ('distritopostal_state_id', '=', distritopostal_state_id.id)
+                ]
+            )
+            # operations
+            if distritopostal_municipality_ids:
                 count = 0            
                 for distritopostal_municipality_id in distritopostal_municipality_ids:
                     count += 1
-                    #_logger                
+                    # _logger
                     percent = (float(count)/float(len(distritopostal_municipality_ids)))*100
-                    percent = "{0:.2f}".format(percent)                    
-                    _logger.info(str(distritopostal_municipality_id.id)+' - '+str(percent)+'% ('+str(count)+'/'+str(len(distritopostal_municipality_ids))+')')
-                    #request            
-                    url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/'+str(self.external_id)+'/municipalities/'
+                    percent = "{0:.2f}".format(percent)
+                    _logger.info('%s - %s%s (%s/%s)' % (
+                        distritopostal_municipality_id.external_id,
+                        percent,
+                        '%',
+                        count,
+                        len(distritopostal_municipality_ids)
+                    ))
+                    # request
+                    url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/' % self.external_id
                     payload = {
                         '$filter': '(name=='+str(distritopostal_municipality_id.name.encode('utf-8'))+')'
                     }                         
                     response = requests.get(url, params=payload)                    
-                    if response.status_code==200:
+                    if response.status_code == 200:
                         response_json = json.loads(response.text)
                         if 'provinces' in response_json:
                             for province in response_json['provinces']:
@@ -88,74 +101,74 @@ class PropertyState(models.Model):
                                                 ('external_id', '=', str(municipality['id']))
                                             ]
                                         ) 
-                                        if len(property_municipality_ids)==0:
-                                            #creamos
-                                            property_municipality_vals = {
+                                        if len(property_municipality_ids) == 0:
+                                            # creamos
+                                            vals = {
                                                 'property_state_id': self.id,                                                                                                        
                                                 'external_id': str(municipality['id']),
                                                 'name': str(municipality['name'].encode('utf-8')),
                                                 'source': 'bbva',
                                                 'total_towns': 0
                                             }
-                                            #location
+                                            # location
                                             if 'location' in municipality:
                                                 if 'value' in municipality['location']:
                                                     location_value = municipality['location']['value'].replace(',', '.').split(';')
-                                                    #_logger.info(location_value)
-                                                    property_municipality_vals['latitude'] = str(location_value[1])
-                                                    property_municipality_vals['longitude'] = str(location_value[0].replace('-.', '-0.'))
-                                            #create
-                                            property_municipality_obj = self.env['property.municipality'].sudo().create(property_municipality_vals)
-                                            #update
+                                                    # _logger.info(location_value)
+                                                    vals['latitude'] = str(location_value[1])
+                                                    vals['longitude'] = str(location_value[0].replace('-.', '-0.'))
+                                            # create
+                                            property_municipality_obj = self.env['property.municipality'].sudo().create(vals)
+                                            # update
                                             distritopostal_municipality_id.property_municipality_id = property_municipality_obj.id                                             
-                        #Sleep 1 second to prevent error (if request)
+                        # Sleep 1 second to prevent error (if request)
                         time.sleep(1)                                                                        
                     else:
                         _logger.info('status_code')
                         _logger.info(response.status_code)                    
-            #update date_last_check
+            # update date_last_check
             self.date_last_check = current_date.strftime("%Y-%m-%d")                                                
-        #return
+        # return
         return return_item    
     
     @api.multi    
     def cron_check_states(self, cr=None, uid=False, context=None):
         _logger.info('cron_check_states')
-        #return
+        # return
         return_item = {
             'errors': False,
             'status_code': 200,
             'error': ''
         }
-        #all_items
+        # all_items
         property_state_external_id = []
         property_state_ids = self.env['property.state'].search([('id', '>', 0)])
-        if len(property_state_ids)>0:
+        if property_state_ids:
             for property_state_id in property_state_ids:
                 property_state_external_id.append(str(property_state_id.external_id))
-        #requests                         
+        # requests
         url = 'https://www.bbva.es/ASO/streetMap/V02/provinces'
         response = requests.get(url=url)
-        if response.status_code==200:
+        if response.status_code == 200:
             response_json = json.loads(response.text)
             if 'provinces' in response_json:
                 for province in response_json['provinces']:
                     if str(province['id']) not in property_state_external_id:                            
-                        #creamos
-                        property_state_vals = {
+                        # creamos
+                        vals = {
                             'external_id': str(province['id']),
                             'name': str(province['name'].encode('utf-8')),
                             'source': 'bbva',
                             'total_municipalities': 0
                         }
-                        #location
+                        # location
                         if 'location' in province:
                             if 'value' in province['location']:
                                 location_value = province['location']['value'].split(';')
-                                property_state_vals['latitude'] = str(location_value[0])
-                                property_state_vals['longitude'] = str(location_value[1])
-                        #create
-                        property_state_obj = self.env['property.state'].sudo().create(property_state_vals)                        
+                                vals['latitude'] = str(location_value[0])
+                                vals['longitude'] = str(location_value[1])
+                        # create
+                        self.env['property.state'].sudo().create(vals)
         else:
             return_item = {
                 'errors': True,
@@ -165,5 +178,5 @@ class PropertyState(models.Model):
                     'text': response.text
                 }
             }
-        #return
+        # return
         _logger.info(return_item)                                                                
