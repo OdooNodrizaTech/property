@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/OdooNodrizaTech/OdooNodrizaTech/OdooNodrizaTech/property.svg?branch=12.0)](https://travis-ci.org/OdooNodrizaTech/OdooNodrizaTech/OdooNodrizaTech/property)
+[![Build Status](https://travis-ci.org/OdooNodrizaTech/property.svg?branch=12.0)](https://travis-ci.org/OdooNodrizaTech/property)
 [![Coverage Status](https://coveralls.io/repos/OdooNodrizaTech/OdooNodrizaTech/OdooNodrizaTech/property/badge.svg?branch=12.0)](https://coveralls.io/r/OdooNodrizaTech/OdooNodrizaTech/OdooNodrizaTech/property?branch=12.0)
 
 property
