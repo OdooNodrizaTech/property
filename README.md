@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/OdooNodrizaTech/property.svg?branch=12.0)](https://travis-ci.org/OdooNodrizaTech/property)
-[![Coverage Status](https://coveralls.io/repos/OdooNodrizaTech/OdooNodrizaTech/property/badge.svg?branch=12.0)](https://coveralls.io/r/OdooNodrizaTech/OdooNodrizaTech/property?branch=12.0)
+[![Coverage Status](https://coveralls.io/repos/OdooNodrizaTech/property/badge.svg?branch=12.0)](https://coveralls.io/r/OdooNodrizaTech/property?branch=12.0)
 
 property
 =========
