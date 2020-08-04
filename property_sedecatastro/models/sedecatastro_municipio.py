@@ -1,13 +1,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-#https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaMunicipio
-from odoo import api, fields, models
-
+# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaMunicipio
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, models, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
+_logger = logging.getLogger(__name__)
+
 
 class SedecatastroMunicipio(models.Model):
     _name = 'sedecatastro.municipio'
@@ -48,8 +47,9 @@ class SedecatastroMunicipio(models.Model):
         help='NUMERO DE ITEMS DEVUELTOS EN LA LISTA CALLEJERO'
     )
     
-    @api.one    
+    @api.multi
     def action_get_vias_sedecatastro(self):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -129,38 +129,38 @@ class SedecatastroMunicipio(models.Model):
     
     @api.model    
     def cron_check_sedecatastro_municipios(self):
-        _logger.info('cron_check_sedecatastro_municipios')
-        
-        sedecatastro_provincia_ids = self.env['sedecatastro.provincia'].search(
+        provincia_ids = self.env['sedecatastro.provincia'].search(
             [
                 ('full', '=', False)
             ]
         )
-        if sedecatastro_provincia_ids:
+        if provincia_ids:
             count = 0
-            for sedecatastro_provincia_id in sedecatastro_provincia_ids:
+            for provincia_id in provincia_ids:
                 count += 1
                 # action_get_municipios_sedecatastro
-                return_item = sedecatastro_provincia_id.action_get_municipios_sedecatastro()[0]
+                return_item = provincia_id.action_get_municipios_sedecatastro()[0]
                 if 'errors' in return_item:
-                    if return_item['errors'] == True:
+                    if return_item['errors']:
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
-                            _logger.info('Raro que sea un 403 pero pasamos')
+                            _logger.info(
+                                _('Raro que sea un 403 pero pasamos')
+                            )
                 # _logger
-                percent = (float(count)/float(len(sedecatastro_provincia_ids)))*100
+                percent = (float(count)/float(len(provincia_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
-                    sedecatastro_provincia_id.np.encode('utf-8'),
+                    provincia_id.np.encode('utf-8'),
                     percent,
                     '%',
                     count,
-                    len(sedecatastro_provincia_ids)
+                    len(provincia_ids)
                 ))
                 # update
-                sedecatastro_provincia_id.full = True
+                provincia_id.full = True
                 # Sleep 1 second to prevent error
-                time.sleep(1)                                                
+                time.sleep(1)

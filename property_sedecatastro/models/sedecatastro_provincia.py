@@ -1,13 +1,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-#https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaProvincia
-from odoo import api, fields, models
-
+# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaProvincia
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, models, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
+_logger = logging.getLogger(__name__)
+
 
 class SedecatastroProvincia(models.Model):
     _name = 'sedecatastro.provincia'
@@ -31,8 +30,9 @@ class SedecatastroProvincia(models.Model):
         string='Total municipios'
     )
     
-    @api.one    
+    @api.multi
     def action_get_municipios_sedecatastro(self):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -62,13 +62,13 @@ class SedecatastroProvincia(models.Model):
                                     municipios['consulta_municipiero']['municipiero']['muni'] = [municipios['consulta_municipiero']['municipiero']['muni']]                                                                
                         # for
                         for muni_item in municipios['consulta_municipiero']['municipiero']['muni']:
-                            sedecatastro_municipio_ids = self.env['sedecatastro.municipio'].search(
+                            municipio_ids = self.env['sedecatastro.municipio'].search(
                                 [
                                     ('sedecatastro_provincia_id', '=', self.id), 
                                     ('loine_cm', '=', str(muni_item['loine']['cm']))
                                 ]
                             )                            
-                            if len(sedecatastro_municipio_ids) == 0:
+                            if len(municipio_ids) == 0:
                                 # creamos
                                 vals = {
                                     'sedecatastro_provincia_id': self.id,
@@ -107,11 +107,9 @@ class SedecatastroProvincia(models.Model):
     
     @api.model    
     def cron_check_sedecatastro_provincias(self):
-        _logger.info('cron_check_sedecatastro_provincias')                        
         # request
         url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/ConsultaProvincia'
         response = requests.post(url, data={})
-        
         if response.status_code != 200:
             xmltodict_response = xmltodict.parse(response.text)
             provincias = json.loads(json.dumps(xmltodict_response))        
@@ -119,12 +117,12 @@ class SedecatastroProvincia(models.Model):
                 if 'provinciero' in provincias['consulta_provinciero']:
                     if 'prov' in provincias['consulta_provinciero']['provinciero']:
                         for prov_item in provincias['consulta_provinciero']['provinciero']['prov']:
-                            sedecatastro_provincia_ids = self.env['sedecatastro.provincia'].search(
+                            provincia_ids = self.env['sedecatastro.provincia'].search(
                                 [
                                     ('cpine', '=', str(prov_item['cpine']))
                                 ]
                             )
-                            if len(sedecatastro_provincia_ids) == 0:
+                            if len(provincia_ids) == 0:
                                 # creamos
                                 vals = {
                                     'cpine': str(prov_item['cpine']),
@@ -151,4 +149,4 @@ class SedecatastroProvincia(models.Model):
                 }
             }
         # _logger
-        _logger.info(return_item)                                
+        _logger.info(return_item)

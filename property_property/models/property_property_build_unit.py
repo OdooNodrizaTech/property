@@ -2,6 +2,7 @@
 
 from odoo import fields, models
 
+
 class PropertyPropertyBuildUnit(models.Model):
     _name = 'property.property.build.unit'
     _description = 'Property Property Build Unit'
@@ -35,8 +36,8 @@ class PropertyPropertyBuildUnit(models.Model):
     )            
     source = fields.Selection(
         selection=[
-            ('bbva','BBVA')                                      
+            ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
-    )    
+    )

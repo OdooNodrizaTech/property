@@ -1,14 +1,13 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-#https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=Consulta_DNPRC
-from odoo import api, fields, models
-
+# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=Consulta_DNPRC
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, models, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
 import time
+_logger = logging.getLogger(__name__)
+
 
 class SedecatastroInmueble(models.Model):
     _name = 'sedecatastro.inmueble'
@@ -85,8 +84,9 @@ class SedecatastroInmueble(models.Model):
         string='Date Last Check'
     )                       
     
-    @api.one    
+    @api.multi
     def action_get_info_sedecatastro(self):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -112,8 +112,9 @@ class SedecatastroInmueble(models.Model):
                     if inmuebles['consulta_dnp']['control']['cudnp'] == '1':
                         #inmueble y toda la info
                         if 'bico' in inmuebles['consulta_dnp']:
-                            _logger.info('ok, es solo 1 inmueble con la info completa')
-                            
+                            _logger.info(
+                                _('ok, es solo 1 inmueble con la info completa')
+                            )
                             if 'bi' in inmuebles['consulta_dnp']['bico']:
                                 # ldt
                                 self.ldt = str(inmuebles['consulta_dnp']['bico']['bi']['ldt'].encode('utf-8'))
@@ -190,59 +191,57 @@ class SedecatastroInmueble(models.Model):
                 
     @api.model
     def cron_check_sedecatastro_inmuebles(self):
-        _logger.info('cron_check_sedecatastro_inmuebles')                
-        
-        sedecatastro_numero_ids = self.env['sedecatastro.numero'].search(
+        numero_ids = self.env['sedecatastro.numero'].search(
             [
                 ('full', '=', False)
             ],
             limit=1000
         )
-        if sedecatastro_numero_ids:
+        if numero_ids:
             count = 0
-            for sedecatastro_numero_id in sedecatastro_numero_ids:
+            for numero_id in numero_ids:
                 count += 1
                 # action_get_numeros_sedecatastro
-                return_item = sedecatastro_numero_id.action_get_inmuebles_sedecatastro()[0]
+                return_item = numero_id.action_get_inmuebles_sedecatastro()[0]
                 if 'errors' in return_item:
-                    if return_item['errors'] == True:
+                    if return_item['errors']:
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
-                            _logger.info('Raro que sea un 403 pero pasamos')
+                            _logger.info(
+                                _('Raro que sea un 403 pero pasamos')
+                            )
                 # _logger.info(sedecatastro_numero_id.id)
-                percent = (float(count)/float(len(sedecatastro_numero_ids)))*100
+                percent = (float(count)/float(len(numero_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
-                    sedecatastro_numero_id.id,
+                    numero_id.id,
                     percent,
                     '%',
                     count,
-                    len(sedecatastro_numero_ids)
+                    len(numero_ids)
                 ))
                 # update
-                sedecatastro_numero_id.full = True
+                numero_id.full = True
                 # Sleep 1 second to prevent error
                 time.sleep(1)
                 
     @api.model
     def cron_check_sedecatastro_inmuebles_sin_datos(self):
-        _logger.info('cron_check_sedecatastro_inmuebles_sin_datos')                
-        
-        sedecatastro_inmueble_ids = self.env['sedecatastro.inmueble'].search(
+        inmueble_ids = self.env['sedecatastro.inmueble'].search(
             [
                 ('full', '=', False)
             ],
             limit=1000
         )
-        if sedecatastro_inmueble_ids:
+        if inmueble_ids:
             count = 0
-            for sedecatastro_inmueble_id in sedecatastro_inmueble_ids:
+            for inmueble_id in inmueble_ids:
                 count += 1
                 # action_get_info_sedecatastro
-                return_item = sedecatastro_inmueble_id.action_get_info_sedecatastro()[0]
+                return_item = inmueble_id.action_get_info_sedecatastro()[0]
                 if 'errors' in return_item:
                     if return_item['errors'] == True:
                         _logger.info(return_item)
@@ -250,18 +249,20 @@ class SedecatastroInmueble(models.Model):
                         if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
-                            _logger.info('Raro que sea un 403 pero pasamos')
+                            _logger.info(
+                                _('Raro que sea un 403 pero pasamos')
+                            )
                 # _logger.info(sedecatastro_inmueble_id.id)
-                percent = (float(count)/float(len(sedecatastro_inmueble_ids)))*100
+                percent = (float(count)/float(len(inmueble_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
-                    sedecatastro_inmueble_id.id,
+                    inmueble_id.id,
                     percent,
                     '%',
                     count,
-                    len(sedecatastro_inmueble_ids)
+                    len(inmueble_ids)
                 ))
                 # update
-                sedecatastro_inmueble_id.full = True
+                inmueble_id.full = True
                 # Sleep 1 second to prevent error
-                time.sleep(1)                
+                time.sleep(1)

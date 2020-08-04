@@ -1,13 +1,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
-
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, models, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
 import time
+_logger = logging.getLogger(__name__)
+
 
 class PropertyWayTypeReport(models.Model):
     _name = 'property.way.type.report'
@@ -25,7 +24,7 @@ class PropertyWayTypeReport(models.Model):
     )    
     source = fields.Selection(
         selection=[
-            ('bbva','BBVA')                                      
+            ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
@@ -33,11 +32,14 @@ class PropertyWayTypeReport(models.Model):
     
     @api.multi    
     def bbva_generate_tsec(self):
+        self.ensure_one()
         tsec = False
         url = 'https://www.bbva.es/ASO/TechArchitecture/grantingTicketsOauth/V01/'
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic '+str(self.env['ir.config_parameter'].sudo().get_param('bbva_authorization_key'))
+            'Authorization': 'Basic %s' % self.env['ir.config_parameter'].sudo().get_param(
+                'bbva_authorization_key'
+            )
         }
         data_obj = {
             'grant_type': 'client_credentials'
@@ -50,8 +52,9 @@ class PropertyWayTypeReport(models.Model):
             
         return tsec
         
-    @api.one    
+    @api.multi
     def action_check(self, tsec):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -80,26 +83,26 @@ class PropertyWayTypeReport(models.Model):
                     for level_distribution_item in response_json['levelDistribution']:
                         if 'level' in level_distribution_item:
                             if 'id' in level_distribution_item['level']:
-                                property_level_ids = self.env['property.level'].search(
+                                level_ids = self.env['property.level'].search(
                                     [
                                         ('external_id', '=', str(level_distribution_item['level']['id']))
                                     ]
                                 )
-                                if property_level_ids:
-                                    property_level_id = property_level_ids[0]
+                                if level_ids:
+                                    level_id = level_ids[0]
                                     # vals
                                     vals = {
                                         'property_way_type_report_id': self.id,
-                                        'property_level_id': property_level_id.id
+                                        'property_level_id': level_id.id
                                     }
                                     # search
-                                    property_way_type_report_detail_ids = self.env['property.way.type.report.detail'].search(
+                                    report_detail_ids = self.env['property.way.type.report.detail'].search(
                                         [
                                             ('property_way_type_report_id', '=', self.id),
                                             ('property_level_id', '=', vals['property_level_id'])
                                         ]
                                     )
-                                    if len(property_way_type_report_detail_ids) == 0:
+                                    if len(report_detail_ids) == 0:
                                         # name
                                         if 'name' in level_distribution_item:
                                             vals['name'] = str(level_distribution_item['name'])
@@ -132,51 +135,53 @@ class PropertyWayTypeReport(models.Model):
         # return
         return return_item                    
     
-    @api.multi    
-    def cron_check_ways_type_report(self, cr=None, uid=False, context=None):
-        _logger.info('cron_check_ways_type_report')
-        
-        property_way_type_report_ids = self.env['property.way.type.report'].search([('id', '>', 0)])
-        if property_way_type_report_ids:
-            property_way_ids = self.env['property.way'].search(
+    @api.model
+    def cron_check_ways_type_report(self):
+        type_report_ids = self.env['property.way.type.report'].search(
+            [
+                ('id', '>', 0)
+            ]
+        )
+        if type_report_ids:
+            way_ids = self.env['property.way'].search(
                 [
-                    ('id', 'not in', property_way_type_report_ids.mapped('property_way_id').ids),
+                    ('id', 'not in', type_report_ids.mapped('property_way_id').ids),
                     ('latitude', '!=', False),
                     ('longitude', '!=', False)
                 ]
             )
         else:
-            property_way_ids = self.env['property.way'].search(
+            way_ids = self.env['property.way'].search(
                 [
                     ('latitude', '!=', False),
                     ('longitude', '!=', False)
                 ]
             )
         # operations-generate
-        if property_way_ids:
-            for property_way_id in property_way_ids:
+        if way_ids:
+            for way_id in way_ids:
                 # vals
                 vals = {
-                    'property_way_id': property_way_id.id,
+                    'property_way_id': way_id.id,
                     'source': 'bbva'
                 }                
                 self.env['property.way.type.report'].sudo().create(vals)
         # now check all property.way.type.report
-        property_way_type_report_ids = self.env['property.way.type.report'].search(
+        type_report_ids = self.env['property.way.type.report'].search(
             [
                 ('full', '=', False)
             ],
             limit=2000
         )
-        if property_way_type_report_ids:
+        if type_report_ids:
             count = 0
             # generate_tsec
             tsec = self.bbva_generate_tsec()
             if tsec:
-                for property_way_type_report_id in property_way_type_report_ids:
+                for type_report_id in type_report_ids:
                     count += 1
                     # action_check
-                    return_item = property_way_type_report_id.action_check(tsec)[0]
+                    return_item = type_report_id.action_check(tsec)[0]
                     if 'errors' in return_item:
                         if return_item['errors'] == True:
                             _logger.info(return_item)
@@ -184,20 +189,22 @@ class PropertyWayTypeReport(models.Model):
                             if return_item['status_code'] != 403:
                                 _logger.info(paramos)
                             else:
-                                _logger.info('Raro que sea un 403 pero pasamos')
+                                _logger.info(
+                                    _('Raro que sea un 403 pero pasamos')
+                                )
                                 tsec = self.bbva_generate_tsec()
                     # _logger
-                    percent = (float(count)/float(len(property_way_type_report_ids)))*100
+                    percent = (float(count)/float(len(type_report_ids)))*100
                     percent = "{0:.2f}".format(percent)
                     _logger.info('%s - %s%s (%s/%s)' % (
-                        property_way_type_report_id.id,
+                        type_report_id.id,
                         percent,
                         '%',
                         count,
-                        len(property_way_type_report_ids)
+                        len(type_report_ids)
                     ))
                     # update
                     if return_item['status_code'] != 403:
                         property_way_type_report_id.full = True
                     # Sleep 1 second to prevent error (if request)
-                    time.sleep(1)                                        
+                    time.sleep(1)

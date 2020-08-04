@@ -1,13 +1,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
-
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, models, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
 import time
+_logger = logging.getLogger(__name__)
+
 
 class PropertyMunicipality(models.Model):
     _name = 'property.municipality'
@@ -40,7 +39,7 @@ class PropertyMunicipality(models.Model):
     )    
     source = fields.Selection(
         selection=[
-            ('bbva','BBVA')                                      
+            ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
@@ -52,8 +51,9 @@ class PropertyMunicipality(models.Model):
         string='Total Ways'
     )
     
-    @api.one    
+    @api.multi
     def action_update_municipality(self):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -62,13 +62,17 @@ class PropertyMunicipality(models.Model):
             'error': ''
         }
         # distritopostal.municipality
-        distritopostal_municipality_ids = self.env['distritopostal.municipality'].search([('property_municipality_id', '=', self.id)])
-        if distritopostal_municipality_ids:
-            distritopostal_municipality_id = distritopostal_municipality_ids[0]
+        municipality_ids = self.env['distritopostal.municipality'].search(
+            [
+                ('property_municipality_id', '=', self.id)
+            ]
+        )
+        if municipality_ids:
+            municipality_id = municipality_ids[0]
             # request
             url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/' % self.external_id
             payload = {
-                '$filter': '(name=='+str(distritopostal_municipality_id.name.encode('utf-8'))+')'
+                '$filter': '(name=='+str(municipality_id.name.encode('utf-8'))+')'
             }                         
             response = requests.get(url, params=payload)                    
             if response.status_code == 200:
@@ -92,8 +96,9 @@ class PropertyMunicipality(models.Model):
         # return
         return return_item
     
-    @api.one    
+    @api.multi
     def action_get_towns(self):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -116,13 +121,13 @@ class PropertyMunicipality(models.Model):
                         for municipality in province['municipalities']:
                             if 'towns' in municipality:
                                 for town in municipality['towns']:
-                                    property_town_ids = self.env['property.town'].search(
+                                    town_ids = self.env['property.town'].search(
                                         [
                                             ('property_municipality_id', '=', self.id),
                                             ('external_id', '=', str(town['id']))
                                         ]
                                     )
-                                    if len(property_town_ids) == 0:
+                                    if len(town_ids) == 0:
                                         # creamos
                                         vals = {
                                             'property_municipality_id': self.id,                                                    
@@ -142,51 +147,57 @@ class PropertyMunicipality(models.Model):
         # return
         return return_item                                
     
-    @api.multi    
-    def cron_check_municipalities(self, cr=None, uid=False, context=None):
-        _logger.info('cron_check_municipalities')
-        
-        property_state_ids = self.env['property.state'].search([('full', '=', False)])
-        if property_state_ids:
+    @api.model
+    def cron_check_municipalities(self):
+        state_ids = self.env['property.state'].search(
+            [
+                ('full', '=', False)
+            ]
+        )
+        if state_ids:
             count = 0
-            for property_state_id in property_state_ids:
+            for state_id in state_ids:
                 count += 1
                 # action_get_municipalities
-                return_item = property_state_id.action_get_municipalities()[0]
+                return_item = state_id.action_get_municipalities()[0]
                 if 'errors' in return_item:
-                    if return_item['errors'] == True:
+                    if return_item['errors']:
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
-                            _logger.info('Raro que sea un 403 pero pasamos')
+                            _logger.info(
+                                _('Raro que sea un 403 pero pasamos')
+                            )
                 # _logger
-                percent = (float(count)/float(len(property_state_ids)))*100
+                percent = (float(count)/float(len(state_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
                     property_state_id.id,
                     percent,
                     '%',
                     count,
-                    len(property_state_ids)
+                    len(state_ids)
                 ))
                 # update
                 property_state_id.full = True
                 # Sleep 1 second to prevent error (if request)
                 time.sleep(1)
     
-    @api.multi    
-    def cron_update_municipalities(self, cr=None, uid=False, context=None):
-        _logger.info('cron_update_municipalities')
-        
-        property_municipality_ids = self.env['property.municipality'].search([('full', '=', True)])
-        if property_municipality_ids:
+    @api.model
+    def cron_update_municipalities(self):
+        municipality_ids = self.env['property.municipality'].search(
+            [
+                ('full', '=', True)
+            ]
+        )
+        if municipality_ids:
             count = 0
-            for property_municipality_id in property_municipality_ids:
+            for municipality_id in municipality_ids:
                 count += 1
                 # action_update_municipality
-                return_item = property_municipality_id.action_update_municipality()[0]
+                return_item = municipality_id.action_update_municipality()[0]
                 if 'errors' in return_item:
                     if return_item['errors'] == True:
                         _logger.info(return_item)
@@ -194,20 +205,23 @@ class PropertyMunicipality(models.Model):
                         if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
-                            _logger.info('Raro que sea un 403 pero pasamos')
+                            _logger.info(
+                                _('Raro que sea un 403 pero pasamos')
+                            )
                 # _logger
-                percent = (float(count)/float(len(property_municipality_ids)))*100
+                percent = (float(count)/float(len(municipality_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
                     property_municipality_id.id,
                     percent,
                     '%',
                     count,
-                    len(property_municipality_ids)
+                    len(municipality_ids)
                 ))
                 
-    @api.one    
+    @api.multi
     def action_get_ways(self):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -217,27 +231,31 @@ class PropertyMunicipality(models.Model):
         }
         total_ways = 0
         # distritopostal.municipality
-        distritopostal_municipality_ids = self.env['distritopostal.municipality'].search([('property_municipality_id', '=', self.id)])
-        if distritopostal_municipality_ids:
-            distritopostal_municipality_id = distritopostal_municipality_ids[0]
-            distritopostal_way_ids = self.env['distritopostal.way'].search(
+        municipality_ids = self.env['distritopostal.municipality'].search(
+            [
+                ('property_municipality_id', '=', self.id)
+            ]
+        )
+        if municipality_ids:
+            municipality_id = municipality_ids[0]
+            way_ids = self.env['distritopostal.way'].search(
                 [
-                    ('distritopostal_municipality_id', '=', distritopostal_municipality_id.id)
+                    ('distritopostal_municipality_id', '=', municipality_id.id)
                 ]
             )
-            if distritopostal_way_ids:
+            if way_ids:
                 count = 0
-                for distritopostal_way_id in distritopostal_way_ids:
+                for way_id in way_ids:
                     count += 1
                     # _logger
-                    percent = (float(count)/float(len(distritopostal_way_ids)))*100
+                    percent = (float(count)/float(len(way_ids)))*100
                     percent = "{0:.2f}".format(percent)
                     _logger.info('%s - %s%s (%s/%s)' % (
-                        distritopostal_way_id.id,
+                        way_id.id,
                         percent,
                         '%',
                         count,
-                        len(distritopostal_way_ids)
+                        len(way_ids)
                     ))
                     # request
                     url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/%s/ways' % (
@@ -245,7 +263,7 @@ class PropertyMunicipality(models.Model):
                         self.external_id
                     )
                     payload = {
-                        '$filter': '(name=='+str(distritopostal_way_id.name.encode('utf-8'))+')'
+                        '$filter': '(name=='+str(way_id.name.encode('utf-8'))+')'
                     }                         
                     response = requests.get(url, params=payload)
                     if response.status_code == 200:
@@ -257,27 +275,27 @@ class PropertyMunicipality(models.Model):
                                         if 'towns' in municipality:
                                             for town in municipality['towns']:
                                                 if 'id' in town:
-                                                    property_town_ids = self.env['property.town'].search(
+                                                    town_ids = self.env['property.town'].search(
                                                         [
                                                             ('property_municipality_id', '=', self.id),
                                                             ('external_id', '=', str(town['id']))
                                                         ]
                                                     )
-                                                    if property_town_ids:
-                                                        property_town_id = property_town_ids[0]
+                                                    if town_ids:
+                                                        town_id = town_ids[0]
                                                         # ways
                                                         if 'ways' in town:
                                                             for way in town['ways']:
-                                                                property_way_ids = self.env['property.way'].search(
+                                                                way_ids2 = self.env['property.way'].search(
                                                                     [
                                                                         ('property_town_id', '=', self.id),
                                                                         ('external_id', '=', str(way['id']))
                                                                     ]
                                                                 )
-                                                                if len(property_way_ids) == 0:
+                                                                if len(way_ids2) == 0:
                                                                     # creamos
                                                                     vals = {
-                                                                        'property_town_id': property_town_id.id,                                                    
+                                                                        'property_town_id': town_id.id,
                                                                         'external_id': str(way['id']),
                                                                         'name': str(way['name'].encode('utf-8')),
                                                                         'source': 'bbva'
@@ -288,24 +306,23 @@ class PropertyMunicipality(models.Model):
                                                                     # type
                                                                     if 'type' in way:
                                                                         if 'id' in way['type']:
-                                                                            property_way_type_ids = self.env['property.way.type'].search(
+                                                                            way_type_ids = self.env['property.way.type'].search(
                                                                                 [
                                                                                     ('source', '=', 'bbva'),
                                                                                     ('external_id', '=', str(way['type']['id']))
                                                                                 ]
                                                                             )
-                                                                            if property_way_type_ids:
-                                                                                property_way_type_id = property_way_type_ids[0]
-                                                                                vals['property_way_type_id'] = property_way_type_id.id
+                                                                            if way_type_ids:
+                                                                                vals['property_way_type_id'] = way_type_ids[0].id
                                                                     # latitude-longitude
                                                                     if 'location' in way:
                                                                         location_value = way['location']['value'].replace(',', '.').split(';')
                                                                         vals['latitude'] = str(location_value[1])
                                                                         vals['longitude'] = str(location_value[0].replace('-.', '-0.'))
                                                                     # create
-                                                                    property_way_obj = self.env['property.way'].sudo().create(vals)
+                                                                    way_obj = self.env['property.way'].sudo().create(vals)
                                                                     # distritopostal_way_id
-                                                                    distritopostal_way_id.property_way_id = property_way_obj.id
+                                                                    way_id.property_way_id = way_obj.id
                                                                     # total_ways
                                                                     total_ways += 1                        
                         # Sleep 1 second to prevent error (if request)
@@ -319,23 +336,25 @@ class PropertyMunicipality(models.Model):
         # return
         return return_item
     
-    @api.multi    
-    def cron_check_ways(self, cr=None, uid=False, context=None):
-        _logger.info('cron_check_ways')
-        
-        property_municipality_ids = self.env['property.municipality'].search([('full_ways', '=', False)])
-        if property_municipality_ids:
+    @api.model
+    def cron_check_ways(self):
+        municipality_ids = self.env['property.municipality'].search(
+            [
+                ('full_ways', '=', False)
+            ]
+        )
+        if municipality_ids:
             count = 0
-            for property_municipality_id in property_municipality_ids:
-                property_town_ids = self.env['property.town'].search(
+            for municipality_id in municipality_ids:
+                town_ids = self.env['property.town'].search(
                     [
-                        ('property_municipality_id', '=', property_municipality_id.id)
+                        ('property_municipality_id', '=', municipality_id.id)
                     ]
                 )
-                if property_town_ids:# suponemos que si tiene 1 o + ya estan importados
+                if town_ids:  # suponemos que si tiene 1 o + ya estan importados
                     count += 1
                     # action_get_municipalities
-                    return_item = property_municipality_id.action_get_ways()[0]
+                    return_item = municipality_id.action_get_ways()[0]
                     if 'errors' in return_item:
                         if return_item['errors'] == True:
                             _logger.info(return_item)
@@ -345,14 +364,14 @@ class PropertyMunicipality(models.Model):
                             else:
                                 _logger.info('Raro que sea un 403 pero pasamos')
                     # _logger
-                    percent = (float(count)/float(len(property_municipality_ids)))*100
+                    percent = (float(count)/float(len(municipality_ids)))*100
                     percent = "{0:.2f}".format(percent)
                     _logger.info('%s - %s%s (%s/%s)' % (
-                        property_municipality_id.name.encode('utf-8'),
+                        municipality_id.name.encode('utf-8'),
                         percent,
                         '%',
                         count,
-                        len(property_municipality_ids)
+                        len(municipality_ids)
                     ))
                     # update
-                    property_municipality_id.full_ways = True                                                                    
+                    municipality_id.full_ways = True

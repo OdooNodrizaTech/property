@@ -169,4 +169,5 @@
         <field name="state">code</field>
         <field name="code">model.cron_check_ways_area_report()</field>
     </record>
+
 </odoo>

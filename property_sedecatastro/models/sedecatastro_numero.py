@@ -1,14 +1,13 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-#https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaNumero
-from odoo import api, fields, models
-
+# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaNumero
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, models, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
 import time
+_logger = logging.getLogger(__name__)
+
 
 class SedecatastroNumero(models.Model):
     _name = 'sedecatastro.numero'
@@ -45,8 +44,9 @@ class SedecatastroNumero(models.Model):
         string='Total inmuebles'
     )
     
-    @api.one    
+    @api.multi
     def action_get_inmuebles_sedecatastro(self):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -83,7 +83,7 @@ class SedecatastroNumero(models.Model):
                             'sedecatastro_numero_id': self.id,
                             'referencia': '',
                             'date_last_check': current_date.strftime("%Y-%m-%d"),
-                            'full': True,# ya esta completa la informacion, no hay que ampliarla como sucede en el listado de inmuebles
+                            'full': True,
                             'ldt': str(inmuebles['consulta_dnp']['bico']['bi']['ldt'].encode('utf-8'))
                         }
                         # idbi
@@ -115,14 +115,14 @@ class SedecatastroNumero(models.Model):
                             if field_to_create_reference in vals:
                                 vals['referencia'] += str(vals[field_to_create_reference])
                         # create if not exists
-                        sedecatastro_inmueble_ids = self.env['sedecatastro.inmueble'].search(
+                        inmueble_ids = self.env['sedecatastro.inmueble'].search(
                             [
                                 ('sedecatastro_numero_id', '=', self.id),
                                 ('referencia', '=', str(vals['referencia']))
                             ]
                         )
-                        if len(sedecatastro_inmueble_ids) == 0:
-                            sedecatastro_inmueble_obj = self.env['sedecatastro.inmueble'].sudo().create(vals)
+                        if len(inmueble_ids) == 0:
+                            inmueble_obj = self.env['sedecatastro.inmueble'].sudo().create(vals)
                             # lcons
                             if 'lcons' in inmuebles['consulta_dnp']['bico']:
                                 if 'cons' in inmuebles['consulta_dnp']['bico']['lcons']:
@@ -133,7 +133,7 @@ class SedecatastroNumero(models.Model):
                                     for cons_item in inmuebles['consulta_dnp']['bico']['lcons']['cons']:
                                         # cals
                                         vals = {
-                                            'sedecatastro_inmueble_id': sedecatastro_inmueble_obj.id,
+                                            'sedecatastro_inmueble_id': inmueble_obj.id,
                                             'lcd': str(cons_item['lcd'])
                                         }
                                         # dt
@@ -196,39 +196,39 @@ class SedecatastroNumero(models.Model):
         
     @api.model
     def cron_check_sedecatastro_numeros(self):
-        _logger.info('cron_check_sedecatastro_numeros')                
-        
-        sedecatastro_via_ids = self.env['sedecatastro.via'].search(
+        via_ids = self.env['sedecatastro.via'].search(
             [
                 ('full', '=', False)
             ],
             limit=1000
         )
-        if sedecatastro_via_ids:
+        if via_ids:
             count = 0
-            for sedecatastro_via_id in sedecatastro_via_ids:
+            for via_id in via_ids:
                 count += 1
                 # action_get_numeros_sedecatastro
-                return_item = sedecatastro_via_id.action_get_numeros_sedecatastro()[0]
+                return_item = via_id.action_get_numeros_sedecatastro()[0]
                 if 'errors' in return_item:
-                    if return_item['errors'] == True:
+                    if return_item['errors']:
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
-                            _logger.info('Raro que sea un 403 pero pasamos')
+                            _logger.info(
+                                _('Raro que sea un 403 pero pasamos')
+                            )
                 # _logger.info(sedecatastro_via_id.dir_nv)
-                percent = (float(count)/float(len(sedecatastro_via_ids)))*100
+                percent = (float(count)/float(len(via_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
-                    sedecatastro_via_id.id,
+                    via_id.id,
                     percent,
                     '%',
                     count,
-                    len(sedecatastro_via_ids)
+                    len(via_ids)
                 ))
                 # update
-                sedecatastro_via_id.full = True
+                via_id.full = True
                 # Sleep 1 second to prevent error
-                time.sleep(1)                                            
+                time.sleep(1)

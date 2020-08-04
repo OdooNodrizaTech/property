@@ -1,13 +1,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
-
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, models, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
 import time
+_logger = logging.getLogger(__name__)
+
 
 class PropertyWayReferenceSale(models.Model):
     _name = 'property.way.reference.sale'
@@ -51,7 +50,7 @@ class PropertyWayReferenceSale(models.Model):
     )    
     source = fields.Selection(
         selection=[
-            ('bbva','BBVA')                                      
+            ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
@@ -59,11 +58,14 @@ class PropertyWayReferenceSale(models.Model):
     
     @api.multi    
     def bbva_generate_tsec(self):
+        self.ensure_one()
         tsec = False
         url = 'https://www.bbva.es/ASO/TechArchitecture/grantingTicketsOauth/V01/'
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic '+str(self.env['ir.config_parameter'].sudo().get_param('bbva_authorization_key'))
+            'Authorization': 'Basic %s' % self.env['ir.config_parameter'].sudo().get_param(
+                'bbva_authorization_key'
+            )
         }
         data_obj = {
             'grant_type': 'client_credentials'
@@ -74,4 +76,4 @@ class PropertyWayReferenceSale(models.Model):
             if 'access_token' in response_json:
                 tsec = str(response_json['access_token'])
             
-        return tsec    
+        return tsec

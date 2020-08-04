@@ -1,13 +1,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
-
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, models, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
 import time
+_logger = logging.getLogger(__name__)
+
 
 class PropertyProperty(models.Model):
     _name = 'property.property'
@@ -69,7 +68,7 @@ class PropertyProperty(models.Model):
     )    
     source = fields.Selection(
         selection=[
-            ('bbva','BBVA')                                      
+            ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
@@ -80,11 +79,14 @@ class PropertyProperty(models.Model):
     
     @api.multi    
     def bbva_generate_tsec(self):
+        self.ensure_one()
         tsec = False
         url = 'https://www.bbva.es/ASO/TechArchitecture/grantingTicketsOauth/V01/'
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic '+str(self.env['ir.config_parameter'].sudo().get_param('bbva_authorization_key'))
+            'Authorization': 'Basic %s' % self.env['ir.config_parameter'].sudo().get_param(
+                'bbva_authorization_key'
+            )
         }
         data_obj = {
             'grant_type': 'client_credentials'
@@ -97,8 +99,9 @@ class PropertyProperty(models.Model):
             
         return tsec            
         
-    @api.one    
-    def action_get_full_info(self, tsec, property_use_id_external_id=False):
+    @api.multi
+    def action_get_full_info(self, tsec, use_id_external_id=False):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -107,12 +110,16 @@ class PropertyProperty(models.Model):
             'error': ''
         }
         # property_use_id_external_id
-        if property_use_id_external_id == False:
-            property_use_id_external_id = []
-            property_use_ids = self.env['property.use'].search([('id', '>', 0)])
-            if property_use_ids:
-                for property_use_id in property_use_ids:
-                    property_use_id_external_id[str(property_use_id.external_id)] = property_use_id.id
+        if not use_id_external_id:
+            use_id_external_id = []
+            use_ids = self.env['property.use'].search(
+                [
+                    ('id', '>', 0)
+                ]
+            )
+            if use_ids:
+                for use_id in use_ids:
+                    use_id_external_id[str(use_id.external_id)] = use_id.id
         # requests
         total_build_units = 0
         url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/%s/towns/%s/ways/%s/numbers/%s/properties/%s' % (
@@ -152,13 +159,13 @@ class PropertyProperty(models.Model):
                                                             if 'buildUnits' in property:
                                                                 for build_unit in property['buildUnits']:
                                                                     if 'id' in build_unit:
-                                                                        property_property_build_unit_ids = self.env['property.property.build.unit'].search(
+                                                                        build_unit_ids = self.env['property.property.build.unit'].search(
                                                                             [
                                                                                 ('property_property_id', '=', self.id),
                                                                                 ('external_id', '=', str(build_unit['id']))
                                                                             ]
                                                                         )
-                                                                        if property_property_build_unit_ids:
+                                                                        if build_unit_ids:
                                                                             # vals
                                                                             vals = {
                                                                                 'property_property_id': self.id,
@@ -180,8 +187,8 @@ class PropertyProperty(models.Model):
                                                                             # useCode
                                                                             if 'useCode' in build_unit:
                                                                                 if 'id' in build_unit['useCode']:
-                                                                                    if str(build_unit['useCode']['id']) in property_use_id_external_id:
-                                                                                        vals['property_use_id'] = int(property_use_id_external_id[str(build_unit['useCode']['id'])])
+                                                                                    if str(build_unit['useCode']['id']) in use_id_external_id:
+                                                                                        vals['property_use_id'] = int(use_id_external_id[str(build_unit['useCode']['id'])])
                                                                             # create
                                                                             self.env['property.property.build.unit'].sudo().create(vals)
                                                                             # total_build_units
@@ -196,52 +203,70 @@ class PropertyProperty(models.Model):
         # return
         return return_item
     
-    @api.multi    
-    def cron_check_properties(self, cr=None, uid=False, context=None):
-        _logger.info('cron_check_properties')
-        
-        property_number_ids = self.env['property.number'].search([('full', '=', False)], limit=3000)
-        if property_number_ids:
+    @api.model
+    def cron_check_properties(self):
+        self.ensure_one()
+        number_ids = self.env['property.number'].search(
+            [
+                ('full', '=', False)
+            ],
+            limit=3000
+        )
+        if number_ids:
             count = 0
             # generate_tsec
             tsec = self.bbva_generate_tsec()
             if tsec:
-                # property_user_id_external_id (optimize multi-query)
-                property_user_id_external_id = {}
-                property_use_ids = self.env['property.use'].search([('id', '>', 0)])
-                if property_use_ids:
-                    for property_use_id in property_use_ids:
-                        property_user_id_external_id[str(property_use_id.external_id)] = property_use_id.id            
-                # property_building_type_id_external_id (optimize multi-query)
-                property_building_type_id_external_id = {}
-                property_building_type_ids = self.env['property.building.type'].search([('id', '>', 0)])
-                if property_building_type_ids:
-                    for property_building_type_id in property_building_type_ids:
-                        property_building_type_id_external_id[str(property_building_type_id.external_id)] = property_building_type_id.id
+                # use_id_external_id (optimize multi-query)
+                use_id_external_id = {}
+                use_ids = self.env['property.use'].search(
+                    [
+                        ('id', '>', 0)
+                    ]
+                )
+                if use_ids:
+                    for use_id in use_ids:
+                        use_id_external_id[str(use_id.external_id)] = use_id.id
+                # building_type_id_external_id (optimize multi-query)
+                building_type_id_external_id = {}
+                building_type_ids = self.env['property.building.type'].search(
+                    [
+                        ('id', '>', 0)
+                    ]
+                )
+                if building_type_ids:
+                    for building_type_id in building_type_ids:
+                        building_type_id_external_id[str(building_type_id.external_id)] = building_type_id.id
                 # for
-                for property_number_id in property_number_ids:
+                for number_id in number_ids:
                     count += 1
                     # action_get_properties
-                    return_item = property_number_id.action_get_properties(tsec, property_user_id_external_id, property_building_type_id_external_id)[0]
+                    return_item = number_id.action_get_properties(
+                        tsec,
+                        use_id_external_id,
+                        building_type_id_external_id
+                    )[0]
                     if 'errors' in return_item:
-                        if return_item['errors'] == True:
+                        if return_item['errors']:
                             _logger.info(return_item)
                             # fix
                             if return_item['status_code'] != 403:
                                 _logger.info(paramos)
                             else:
-                                _logger.info('Raro que sea un 403 pero pasamos')
+                                _logger.info(
+                                    _('Raro que sea un 403 pero pasamos')
+                                )
                                 # generamos de nuevo el tsecs
                                 tsec = self.bbva_generate_tsec()
                     # _logger
-                    percent = (float(count)/float(len(property_number_ids)))*100
+                    percent = (float(count)/float(len(number_ids)))*100
                     percent = "{0:.2f}".format(percent)
                     _logger.info('%s - %s%s (%s/%s)' % (
-                        property_number_id.id,
+                        number_id.id,
                         percent,
                         '%',
                         count,
-                        len(property_number_ids)
+                        len(number_ids)
                     ))
                     # update
                     if return_item['status_code'] != 403:
@@ -249,27 +274,37 @@ class PropertyProperty(models.Model):
                     # Sleep 1 second to prevent error (if request)
                     time.sleep(1)
                     
-    @api.multi    
-    def cron_check_properties_full_info(self, cr=None, uid=False, context=None):
-        _logger.info('cron_check_properties_full_info')
-        
-        property_property_ids = self.env['property.property'].search([('full', '=', False)], limit=3000)
-        if property_property_ids:
+    @api.model
+    def cron_check_properties_full_info(self):
+        property_ids = self.env['property.property'].search(
+            [
+                ('full', '=', False)
+            ],
+            limit=3000
+        )
+        if property_ids:
             # generate_tsec
             tsec = self.bbva_generate_tsec()
             if tsec:
                 count = 0
-                # property_use_id_name (optimize multi-query)
-                property_use_id_external_id = {}
-                property_use_ids = self.env['property.use'].search([('id', '>', 0)])
-                if property_use_ids:
-                    for property_use_id in property_use_ids:
-                        property_use_id_external_id[str(property_use_id.external_id)] = property_use_id.id
+                # use_id_external_id (optimize multi-query)
+                use_id_external_id = {}
+                use_ids = self.env['property.use'].search(
+                    [
+                        ('id', '>', 0)
+                    ]
+                )
+                if use_ids:
+                    for use_id in use_ids:
+                        use_id_external_id[str(use_id.external_id)] = use_id.id
                 # for
-                for property_property_id in property_property_ids:                
+                for property_id in property_ids:
                     count += 1
                     # action_get_full_info
-                    return_item = property_property_id.action_get_full_info(tsec, property_use_id_external_id)[0]
+                    return_item = property_id.action_get_full_info(
+                        tsec,
+                        use_id_external_id
+                    )[0]
                     if 'errors' in return_item:
                         if return_item['errors'] == True:
                             _logger.info(return_item)
@@ -277,18 +312,20 @@ class PropertyProperty(models.Model):
                             if return_item['status_code'] != 403:
                                 _logger.info(paramos)
                             else:
-                                _logger.info('Raro que sea un 403 pero pasamos')
+                                _logger.info(
+                                    _('Raro que sea un 403 pero pasamos')
+                                )
                                 # generamos de nuevo el tsecs
                                 tsec = self.bbva_generate_tsec()
                     # _logger
-                    percent = (float(count)/float(len(property_property_ids)))*100
+                    percent = (float(count)/float(len(property_ids)))*100
                     percent = "{0:.2f}".format(percent)
                     _logger.info('%s - %s%s (%s/%s)' % (
                         property_property_id.external_id,
                         percent,
                         '%',
                         count,
-                        len(property_property_ids)
+                        len(property_ids)
                     ))
                     # update
                     if return_item['status_code'] == 200:

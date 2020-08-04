@@ -35,4 +35,4 @@ class PropertyWayTypeReportDetail(models.Model):
     )
     detached_property_distribution_total = fields.Integer(
         string='Detached Property Distribution Total'
-    )    
+    )

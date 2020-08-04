@@ -28,4 +28,4 @@ class PropertyWayEvolutionPriceDetail(models.Model):
     )
     average_price = fields.Float( 
         string='Average Price'
-    )                                                                                   
+    )

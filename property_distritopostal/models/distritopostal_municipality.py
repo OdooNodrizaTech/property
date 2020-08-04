@@ -1,14 +1,13 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
-
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, model, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
 import time
 from bs4 import BeautifulSoup
+_logger = logging.getLogger(__name__)
+
 
 class DistritopostalMunicipality(models.Model):
     _name = 'distritopostal.municipality'
@@ -31,12 +30,12 @@ class DistritopostalMunicipality(models.Model):
         string='Full'
     )
     
-    @api.one    
+    @api.multi
     def action_get_ways(self):
+        self.ensure_one
         url = 'http://distritopostal.es%s' % self.url
         response = requests.get(url)
         if response.status_code == 200:
-            #_logger.info(response.text)
             soup = BeautifulSoup(response.text, 'lxml')
             # tiene_calles = False
             tiene_calles = False                    
@@ -45,8 +44,10 @@ class DistritopostalMunicipality(models.Model):
                 if 'Callejero de' in h2_item.text:
                     tiene_calles = True                     
             # tiene_calles
-            if tiene_calles == False:
-                _logger.info('no tiene calles, revisaremos para meter codigos postales')
+            if not tiene_calles:
+                _logger.info(
+                    _('no tiene calles, revisaremos para meter codigos postales')
+                )
                 div_infocity_items = soup.findAll('div', {"class": "infocity"})
                 for div_infocity_item in div_infocity_items:
                     h2_items = div_infocity_item.findAll('h2')
@@ -59,13 +60,13 @@ class DistritopostalMunicipality(models.Model):
                                 if 'postales de la provincia de' not in h2_item_a_0_title:
                                     h2_item_a_0_href = str(h2_item_a_0.get('href'))
                                     # search
-                                    distritopostal_postalcode_ids = self.env['distritopostal.postalcode'].search(
+                                    postalcode_ids = self.env['distritopostal.postalcode'].search(
                                         [
                                             ('distritopostal_municipality_id', '=', self.id),
                                             ('url', '=', h2_item_a_0_href)
                                         ]
                                     )
-                                    if len(distritopostal_postalcode_ids) == 0:
+                                    if len(postalcode_ids) == 0:
                                         # vals
                                         vals = {
                                             'distritopostal_municipality_id': self.id,
@@ -74,7 +75,7 @@ class DistritopostalMunicipality(models.Model):
                                         }
                                         # create
                                         self.env['distritopostal.postalcode'].sudo().create(vals)
-                #update
+                # update
                 self.full = True                                                    
             else:
                 div_datatab_items = soup.findAll('div', {"class": "datatab"})
@@ -94,13 +95,13 @@ class DistritopostalMunicipality(models.Model):
                                         # calle_nombre
                                         calle_nombre = str(table_item_tr_tds[0].text.encode('utf-8'))
                                         # search
-                                        distritopostal_way_ids = self.env['distritopostal.way'].search(
+                                        way_ids = self.env['distritopostal.way'].search(
                                             [
                                                 ('distritopostal_municipality_id', '=', self.id),
                                                 ('name', '=', calle_nombre)
                                             ]
                                         )
-                                        if len(distritopostal_way_ids) == 0:
+                                        if len(way_ids) == 0:
                                             # vals
                                             vals = {
                                                 'distritopostal_municipality_id': self.id,
@@ -113,22 +114,23 @@ class DistritopostalMunicipality(models.Model):
     
     @api.model    
     def cron_check_municipalities_distritopostal(self):
-        _logger.info('cron_check_municipalities_distritopostal')
-        
-        letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']        
+        letters = [
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+            'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+        ]
         url = 'http://distritopostal.es/ajax/qmunicipio.php?term='
         for letter in letters:
             url_letter = url+str(letter)            
             response = requests.get(url_letter)
-            if response.status_code==200:
+            if response.status_code == 200:
                 response_json = json.loads(response.text)
                 for item in response_json:
-                    distritopostal_municipality_ids = self.env['distritopostal.municipality'].search(
+                    municipality_ids = self.env['distritopostal.municipality'].search(
                         [
                             ('external_id', '=', item['lid'])
                         ]
                     )
-                    if len(distritopostal_municipality_ids) == 0:
+                    if len(municipality_ids) == 0:
                         # params
                         name = str(item['value'].encode('utf-8'))
                         name_split = name.split(',')
@@ -143,9 +145,13 @@ class DistritopostalMunicipality(models.Model):
                             'url': str(item['url'])                        
                         }
                         # distritopostal_state_id
-                        distritopostal_state_ids = self.env['distritopostal.state'].search([('name', '=', str(state))])
-                        if distritopostal_state_ids:
-                            vals['distritopostal_state_id'] = distritopostal_state_ids[0].id
+                        state_ids = self.env['distritopostal.state'].search(
+                            [
+                                ('name', '=', str(state))
+                            ]
+                        )
+                        if state_ids:
+                            vals['distritopostal_state_id'] = state_ids[0].id
                         else:
                             # url_state
                             char_find = item['url'].rfind('/')
@@ -155,7 +161,9 @@ class DistritopostalMunicipality(models.Model):
                                 'name': str(state),
                                 'url': str(url_state),                      
                             }
-                            distritopostal_state_obj = self.env['distritopostal.state'].sudo().create(state_vals)
-                            vals['distritopostal_state_id'] = distritopostal_state_obj.id
+                            state_obj = self.env['distritopostal.state'].sudo().create(
+                                state_vals
+                            )
+                            vals['distritopostal_state_id'] = state_obj.id
                         # create
                         self.env['distritopostal.municipality'].sudo().create(vals)

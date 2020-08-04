@@ -40,4 +40,4 @@ class PropertyWayReferenceSaleDetail(models.Model):
     )
     average_price_surface_area = fields.Float(
         string='Average Price Surface Area'
-    )    
+    )

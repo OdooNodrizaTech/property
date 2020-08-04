@@ -1,15 +1,14 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-#https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaVia
-from odoo import api, fields, models
-
+# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaVia
 import logging
-_logger = logging.getLogger(__name__)
-
+from odoo import api, fields, models, _
 import requests, xmltodict, json
 from datetime import datetime
 import pytz
 import urllib
 import time
+_logger = logging.getLogger(__name__)
+
 
 class SedecatastroVia(models.Model):
     _name = 'sedecatastro.via'
@@ -53,8 +52,9 @@ class SedecatastroVia(models.Model):
         string='Last Number Know'
     )    
     
-    @api.one    
+    @api.multi
     def action_get_numeros_sedecatastro(self):
+        self.ensure_one
         current_date = datetime.now(pytz.timezone('Europe/Madrid'))
         # return
         return_item = {
@@ -67,7 +67,7 @@ class SedecatastroVia(models.Model):
         numero = 0
         numero_request = 5        
         # while
-        while continue_check_numbers==True:                     
+        while continue_check_numbers:
             # pruebas_get
             url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/ConsultaNumero'
             params_url = {
@@ -80,7 +80,6 @@ class SedecatastroVia(models.Model):
             url_partial = urllib.urlencode(params_url)
             url += '?'+str(url_partial)            
             response = requests.get(url)
-            
             if response.status_code == 200:
                 try:
                     xmltodict_response = xmltodict.parse(response.text)
@@ -101,14 +100,14 @@ class SedecatastroVia(models.Model):
                                 # for
                                 for nump_item in numeros['consulta_numerero']['numerero']['nump']:
                                     numero_item = int(nump_item['num']['pnp'])
-                                    if numero_item>numero:
+                                    if numero_item > numero:
                                         numero = numero_item
                                         numero_has_changed = True
                                     # params
                                     finca_item = str(nump_item['pc']['pc1'])
                                     hoja_plano_item = str(nump_item['pc']['pc2'])
                                     
-                                    sedecatastro_numero_ids = self.env['sedecatastro.numero'].search(
+                                    numero_ids = self.env['sedecatastro.numero'].search(
                                         [
                                             ('sedecatastro_municipio_id', '=', self.id),
                                             ('numero', '=', str(numero_item)),
@@ -116,7 +115,7 @@ class SedecatastroVia(models.Model):
                                             ('hoja_plano', '=', str(hoja_plano_item))
                                         ]
                                     )                                    
-                                    if len(sedecatastro_numero_ids) == 0:
+                                    if len(numero_ids) == 0:
                                         vals = {
                                             'sedecatastro_provincia_id': self.sedecatastro_provincia_id.id,
                                             'sedecatastro_municipio_id': self.sedecatastro_municipio_id.id,
@@ -137,11 +136,11 @@ class SedecatastroVia(models.Model):
                             }
                         }                                                                                               
                     # numero_has_changed
-                    if numero_has_changed == False:
+                    if not numero_has_changed:
                         continue_check_numbers = False
                     else:
-                        numero_request = numero+5# Fix prevent a lot of request
-                        time.sleep(1)# Sleep 1 second to prevent error
+                        numero_request = numero+5
+                        time.sleep(1)
                 except:
                     return {
                         'errors': True,
@@ -170,38 +169,38 @@ class SedecatastroVia(models.Model):
         
     @api.model    
     def cron_check_sedecatastro_vias(self):
-        _logger.info('cron_check_sedecatastro_vias')
-        
-        sedecatastro_municipio_ids = self.env['sedecatastro.municipio'].search(
+        municipio_ids = self.env['sedecatastro.municipio'].search(
             [
                 ('full', '=', False)
             ]
         )
-        if sedecatastro_municipio_ids:
+        if municipio_ids:
             count = 0
-            for sedecatastro_municipio_id in sedecatastro_municipio_ids:
+            for municipio_id in municipio_ids:
                 count += 1
                 # action_get_vias_sedecatastro
-                return_item = sedecatastro_municipio_id.action_get_vias_sedecatastro()[0]
+                return_item = municipio_id.action_get_vias_sedecatastro()[0]
                 if 'errors' in return_item:
-                    if return_item['errors'] == True:
+                    if return_item['errors']:
                         _logger.info(return_item)
                         # fix
-                        if return_item['status_code']!=403:
+                        if return_item['status_code'] != 403:
                             _logger.info(paramos)
                         else:
-                            _logger.info('Raro que sea un 403 pero pasamos')                                
+                            _logger.info(
+                                _('Raro que sea un 403 pero pasamos')
+                            )
                 # _logger.info(sedecatastro_municipio_id.nm)
-                percent = (float(count)/float(len(sedecatastro_municipio_ids)))*100
+                percent = (float(count)/float(len(municipio_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
-                    sedecatastro_municipio_id.nm.encode('utf-8'),
+                    municipio_id.nm.encode('utf-8'),
                     percent,
                     '%',
                     count,
-                    len(sedecatastro_municipio_ids)
+                    len(municipio_ids)
                 ))
                 # update
-                sedecatastro_municipio_id.full = True
+                municipio_id.full = True
                 # Sleep 1 second to prevent error
                 time.sleep(1)

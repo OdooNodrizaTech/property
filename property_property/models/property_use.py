@@ -12,4 +12,4 @@ class PropertyUse(models.Model):
     )
     name = fields.Char(
         string='Name'
-    )        
+    )

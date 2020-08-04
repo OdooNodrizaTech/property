@@ -22,4 +22,4 @@ class PropertyWayAreaReportDetail(models.Model):
     )
     percentage = fields.Float(
         string='Percentage'
-    )    
+    )
