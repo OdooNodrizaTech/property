@@ -1,10 +1,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
 from odoo import api, fields, models, _
-import requests, xmltodict, json
-from datetime import datetime
-import pytz
-import time
+import requests
 from bs4 import BeautifulSoup
 _logger = logging.getLogger(__name__)
 
@@ -43,7 +40,7 @@ class DistritopostalPostalcode(models.Model):
                 if 'Callejero de' in h2_item.text:
                     tiene_calles = True
             
-            if tiene_calles == False:
+            if not tiene_calles:
                 _logger.info('No tiene calles, continuamos')
                 # revisar numero de tablas
                 table_items = soup.findAll('table')

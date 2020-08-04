@@ -6,7 +6,7 @@ from odoo import fields, models
 class PropertyWayReferenceSaleDetail(models.Model):
     _name = 'property.way.reference.sale.detail'
     _description = 'Property Way Reference Sale Detail'
-    
+
     property_way_reference_sale_id = fields.Many2one(
         comodel_name='property.way.reference.sale',
         string='Property Way Reference Sale Id'

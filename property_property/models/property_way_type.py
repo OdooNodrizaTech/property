@@ -1,10 +1,8 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
-from odoo import api, fields, models, _
-import requests, xmltodict, json
-from datetime import datetime
-import pytz
-import time
+from odoo import api, fields, models
+import requests
+import json
 _logger = logging.getLogger(__name__)
 
 

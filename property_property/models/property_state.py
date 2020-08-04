@@ -1,9 +1,9 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
-from odoo import api, fields, models, _
-import requests, xmltodict, json
+from odoo import api, fields, models
+import requests
+import json
 from datetime import datetime
-import pytz
 import time
 _logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class PropertyState(models.Model):
     
     @api.multi
     def action_get_municipalities(self):
-        self.ensure_one
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {

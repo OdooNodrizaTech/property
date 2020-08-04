@@ -6,7 +6,7 @@ from odoo import fields, models
 class PropertyUse(models.Model):
     _name = 'property.use'
     _description = 'Property Use'
-    
+
     external_id = fields.Char(
         string='External Id'
     )

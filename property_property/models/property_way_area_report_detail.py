@@ -6,7 +6,7 @@ from odoo import fields, models
 class PropertyWayAreaReportDetail(models.Model):
     _name = 'property.way.area.report.detail'
     _description = 'Property Way Area Report Detail'
-    
+
     property_way_area_report_id = fields.Many2one(
         comodel_name='property.way.area.report',
         string='Property Way Area Report Id'

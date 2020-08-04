@@ -2,7 +2,9 @@
 # https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaVia
 import logging
 from odoo import api, fields, models, _
-import requests, xmltodict, json
+import requests
+import xmltodict
+import json
 from datetime import datetime
 import pytz
 import urllib
@@ -54,7 +56,7 @@ class SedecatastroVia(models.Model):
     
     @api.multi
     def action_get_numeros_sedecatastro(self):
-        self.ensure_one
+        self.ensure_one()
         current_date = datetime.now(pytz.timezone('Europe/Madrid'))
         # return
         return_item = {

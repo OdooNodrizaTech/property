@@ -6,7 +6,7 @@ from odoo import fields, models
 class PropertyTransactionType(models.Model):
     _name = 'property.transaction.type'
     _description = 'Property Transaction Type'
-    
+
     external_id = fields.Char(
         string='External Id'
     )

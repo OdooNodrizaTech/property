@@ -6,7 +6,7 @@ from odoo import fields, models
 class PropertyPropertyBuildUnit(models.Model):
     _name = 'property.property.build.unit'
     _description = 'Property Property Build Unit'
-    
+
     property_property_id = fields.Many2one(
         comodel_name='property.property',
         string='Property Property Id'
@@ -33,7 +33,7 @@ class PropertyPropertyBuildUnit(models.Model):
     property_building_type_id = fields.Many2one(
         comodel_name='property.building.type',
         string='Property Building Type Id'
-    )            
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')

@@ -1,9 +1,9 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
 from odoo import api, fields, models, _
-import requests, xmltodict, json
+import requests
+import json
 from datetime import datetime
-import pytz
 import time
 _logger = logging.getLogger(__name__)
 
@@ -199,7 +199,7 @@ class PropertyMunicipality(models.Model):
                 # action_update_municipality
                 return_item = municipality_id.action_update_municipality()[0]
                 if 'errors' in return_item:
-                    if return_item['errors'] == True:
+                    if return_item['errors']:
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
@@ -212,7 +212,7 @@ class PropertyMunicipality(models.Model):
                 percent = (float(count)/float(len(municipality_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
-                    property_municipality_id.id,
+                    municipality_id.id,
                     percent,
                     '%',
                     count,

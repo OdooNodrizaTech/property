@@ -6,7 +6,7 @@ from odoo import fields, models
 class PropertyLevel(models.Model):
     _name = 'property.level'
     _description = 'Property Level'
-    
+
     external_id = fields.Char(
         string='External Id'
     )

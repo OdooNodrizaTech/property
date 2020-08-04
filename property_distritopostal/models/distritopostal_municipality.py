@@ -1,10 +1,8 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
-from odoo import api, fields, model, _
-import requests, xmltodict, json
-from datetime import datetime
-import pytz
-import time
+from odoo import api, fields, models, _
+import requests
+import json
 from bs4 import BeautifulSoup
 _logger = logging.getLogger(__name__)
 
@@ -12,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class DistritopostalMunicipality(models.Model):
     _name = 'distritopostal.municipality'
     _description = 'Distritopostal Municipality'
-    
+
     distritopostal_state_id = fields.Many2one(
         comodel_name='distritopostal.state',
         string='Distritopostal State Id'
@@ -32,7 +30,7 @@ class DistritopostalMunicipality(models.Model):
     
     @api.multi
     def action_get_ways(self):
-        self.ensure_one
+        self.ensure_one()
         url = 'http://distritopostal.es%s' % self.url
         response = requests.get(url)
         if response.status_code == 200:

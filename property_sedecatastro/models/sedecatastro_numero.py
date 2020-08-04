@@ -2,9 +2,10 @@
 # https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaNumero
 import logging
 from odoo import api, fields, models, _
-import requests, xmltodict, json
+import requests
+import xmltodict
+import json
 from datetime import datetime
-import pytz
 import time
 _logger = logging.getLogger(__name__)
 

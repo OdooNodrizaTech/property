@@ -1,9 +1,9 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
 from odoo import api, fields, models
-import requests, xmltodict, json
+import requests
+import json
 from datetime import datetime
-import pytz
 import time
 _logger = logging.getLogger(__name__)
 
@@ -248,7 +248,7 @@ class PropertyNumber(models.Model):
                 # action_get_municipalities
                 return_item = way_id.action_get_numbers()[0]
                 if 'errors' in return_item:
-                    if return_item['errors'] == True:
+                    if return_item['errors']:
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
@@ -268,6 +268,6 @@ class PropertyNumber(models.Model):
                     len(way_ids)
                 ))
                 # update
-                property_way_id.full = True
+                way_id.full = True
                 # Sleep 1 second to prevent error (if request)
                 time.sleep(1)
