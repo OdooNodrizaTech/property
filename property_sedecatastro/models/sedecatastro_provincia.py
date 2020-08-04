@@ -1,18 +1,18 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-#https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaProvincia
-from odoo import api, fields, models
-
+# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaProvincia
 import logging
+from odoo import api, fields, models
+import requests
+import xmltodict
+import json
+from datetime import datetime
 _logger = logging.getLogger(__name__)
 
-import requests, xmltodict, json
-from datetime import datetime
-import pytz
 
 class SedecatastroProvincia(models.Model):
     _name = 'sedecatastro.provincia'
     _description = 'Sedecatastro Provincia'
-    
+
     cpine = fields.Char(
         string='Cpine',
         help='CODIGO INE DE LA PROVINCIA'
@@ -30,9 +30,10 @@ class SedecatastroProvincia(models.Model):
     total_municipios = fields.Integer(
         string='Total municipios'
     )
-    
-    @api.one    
+
+    @api.multi
     def action_get_municipios_sedecatastro(self):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -43,32 +44,32 @@ class SedecatastroProvincia(models.Model):
         # request
         url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/ConsultaMunicipio'
         data_obj = {
-            'Provincia': self.np, 
+            'Provincia': self.np,
             'Municipio': ''
-        }                 
-        response = requests.post(url, data=data_obj)        
+        }
+        response = requests.post(url, data=data_obj)
         if response.status_code == 200:
             xmltodict_response = xmltodict.parse(response.text)
-            municipios = json.loads(json.dumps(xmltodict_response))            
-            if 'consulta_municipiero' in municipios:                    
+            municipios = json.loads(json.dumps(xmltodict_response))
+            if 'consulta_municipiero' in municipios:
                 if 'municipiero' in municipios['consulta_municipiero']:
                     if 'muni' in municipios['consulta_municipiero']['municipiero']:
                         # total_municipios
                         if 'control' in municipios['consulta_municipiero']:
                             if 'cumun' in municipios['consulta_municipiero']['control']:
                                 self.total_municipios = municipios['consulta_municipiero']['control']['cumun']
-                                #Fix 1
-                                if municipios['consulta_municipiero']['control']['cumun']=="1":
-                                    municipios['consulta_municipiero']['municipiero']['muni'] = [municipios['consulta_municipiero']['municipiero']['muni']]                                                                
+                                # Fix 1
+                                if municipios['consulta_municipiero']['control']['cumun'] == "1":
+                                    municipios['consulta_municipiero']['municipiero']['muni'] = [municipios['consulta_municipiero']['municipiero']['muni']]
                         # for
                         for muni_item in municipios['consulta_municipiero']['municipiero']['muni']:
-                            sedecatastro_municipio_ids = self.env['sedecatastro.municipio'].search(
+                            municipio_ids = self.env['sedecatastro.municipio'].search(
                                 [
-                                    ('sedecatastro_provincia_id', '=', self.id), 
+                                    ('sedecatastro_provincia_id', '=', self.id),
                                     ('loine_cm', '=', str(muni_item['loine']['cm']))
                                 ]
-                            )                            
-                            if len(sedecatastro_municipio_ids) == 0:
+                            )
+                            if len(municipio_ids) == 0:
                                 # creamos
                                 vals = {
                                     'sedecatastro_provincia_id': self.id,
@@ -86,45 +87,43 @@ class SedecatastroProvincia(models.Model):
                 return {
                     'errors': True,
                     'status_code': response.status_code,
-                    'error': {                        
+                    'error': {
                         'url': url,
                         'data': data_obj,
                         'text': municipios
                     }
-                }                        
+                }
         else:
             return {
                 'errors': True,
                 'status_code': response.status_code,
-                'error': {                    
+                'error': {
                     'url': url,
                     'data': data_obj,
                     'text': response.text
                 }
             }
         # return
-        return return_item            
-    
-    @api.model    
+        return return_item
+
+    @api.model
     def cron_check_sedecatastro_provincias(self):
-        _logger.info('cron_check_sedecatastro_provincias')                        
         # request
         url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/ConsultaProvincia'
         response = requests.post(url, data={})
-        
         if response.status_code != 200:
             xmltodict_response = xmltodict.parse(response.text)
-            provincias = json.loads(json.dumps(xmltodict_response))        
+            provincias = json.loads(json.dumps(xmltodict_response))
             if 'consulta_provinciero' in provincias:
                 if 'provinciero' in provincias['consulta_provinciero']:
                     if 'prov' in provincias['consulta_provinciero']['provinciero']:
                         for prov_item in provincias['consulta_provinciero']['provinciero']['prov']:
-                            sedecatastro_provincia_ids = self.env['sedecatastro.provincia'].search(
+                            provincia_ids = self.env['sedecatastro.provincia'].search(
                                 [
                                     ('cpine', '=', str(prov_item['cpine']))
                                 ]
                             )
-                            if len(sedecatastro_provincia_ids) == 0:
+                            if len(provincia_ids) == 0:
                                 # creamos
                                 vals = {
                                     'cpine': str(prov_item['cpine']),
@@ -136,19 +135,19 @@ class SedecatastroProvincia(models.Model):
                 return_item = {
                     'errors': True,
                     'status_code': response.status_code,
-                    'error': {                        
+                    'error': {
                         'url': url,
                         'text': response.text
                     }
-                }                                
+                }
         else:
             return_item = {
                 'errors': True,
                 'status_code': response.status_code,
-                'error': {                    
+                'error': {
                     'url': url,
                     'text': response.text
                 }
             }
         # _logger
-        _logger.info(return_item)                                
+        _logger.info(return_item)

@@ -6,7 +6,7 @@ from odoo import fields, models
 class PropertyHomeType(models.Model):
     _name = 'property.home.type'
     _description = 'Property Home Type'
-    
+
     external_id = fields.Char(
         string='External Id'
     )

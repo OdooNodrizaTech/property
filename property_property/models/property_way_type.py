@@ -1,35 +1,31 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
-
 import logging
+from odoo import api, fields, models
+import requests
+import json
 _logger = logging.getLogger(__name__)
 
-import requests, xmltodict, json
-from datetime import datetime
-import pytz
-import time
 
 class PropertyWayType(models.Model):
     _name = 'property.way.type'
     _description = 'Property way Type'
-            
+
     external_id = fields.Char(
         string='External Id'
     )
     name = fields.Char(
         string='Name'
-    )            
+    )
     source = fields.Selection(
         selection=[
-            ('bbva','BBVA')                                      
+            ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
-    )            
-    
-    @api.multi    
-    def cron_check_way_types(self, cr=None, uid=False, context=None):
-        _logger.info('cron_check_way_types')
+    )
+
+    @api.model
+    def cron_check_way_types(self):
         # requests
         url = 'https://www.bbva.es/ASO/streetMap/V02/wayTypes/'
         response = requests.get(url=url)
@@ -39,13 +35,13 @@ class PropertyWayType(models.Model):
                 if len(response_json['wayTypes']) > 0:
                     for way_type in response_json['wayTypes']:
                         if 'id' in way_type:
-                            property_way_type_ids = self.env['property.way.type'].search(
+                            way_type_ids = self.env['property.way.type'].search(
                                 [
                                     ('source', '=', 'bbva'),
                                     ('external_id', '=', str(way_type['id']))
                                 ]
                             )
-                            if len(property_way_type_ids) == 0:
+                            if len(way_type_ids) == 0:
                                 # creamos
                                 vals = {
                                     'external_id': str(way_type['id']),

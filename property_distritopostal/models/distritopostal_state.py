@@ -6,7 +6,7 @@ from odoo import fields, models
 class DistritopostalState(models.Model):
     _name = 'distritopostal.state'
     _description = 'Distritopostal State'
-    
+
     name = fields.Char(
         string='Name'
     )

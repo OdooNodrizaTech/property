@@ -1,18 +1,17 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
-
 import logging
+from odoo import api, fields, models, _
+import requests
+import json
+from datetime import datetime
+import time
 _logger = logging.getLogger(__name__)
 
-import requests, xmltodict, json
-from datetime import datetime
-import pytz
-import time
 
 class PropertyNumber(models.Model):
     _name = 'property.number'
     _description = 'Property Number'
-    
+
     property_way_id = fields.Many2one(
         comodel_name='property.way',
         string='Property Way Id'
@@ -46,26 +45,31 @@ class PropertyNumber(models.Model):
     )
     garages_number = fields.Integer(
         string='Garages Number'
-    )        
+    )
     full = fields.Boolean(
         string='Full'
     )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )    
+    )
     source = fields.Selection(
         selection=[
-            ('bbva','BBVA')                                      
+            ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
     )
     total_properties = fields.Integer(
         string='Total Properties'
-    )        
-        
-    @api.one    
-    def action_get_properties(self, tsec, property_use_id_external_id=False, property_building_type_id_external_id=False):
+    )
+
+    @api.multi
+    def action_get_properties(self,
+                              tsec,
+                              use_id_external_id=False,
+                              building_type_id_external_id=False
+                              ):
+        self.ensure_one()
         current_date = datetime.now()
         # return
         return_item = {
@@ -74,19 +78,27 @@ class PropertyNumber(models.Model):
             'error': ''
         }
         # property_use_id_external_id
-        if property_use_id_external_id == False:
-            property_use_id_external_id = {}
-            property_use_ids = self.env['property.use'].search([('id', '>', 0)])
-            if len(property_use_ids)>0:
-                for property_use_id in property_use_ids:
-                    property_use_id_external_id[str(property_use_id.external_id)] = property_use_id.id            
+        if not use_id_external_id:
+            use_id_external_id = {}
+            use_ids = self.env['property.use'].search(
+                [
+                    ('id', '>', 0)
+                ]
+            )
+            if use_ids:
+                for use_id in use_ids:
+                    use_id_external_id[str(use_id.external_id)] = use_id.id
         # property_building_type_id_external_id
-        if property_building_type_id_external_id == False:
-            property_building_type_id_external_id = {}
-            property_building_type_ids = self.env['property.building.type'].search([('id', '>', 0)])
-            if property_building_type_ids:
-                for property_building_type_id in property_building_type_ids:
-                    property_building_type_id_external_id[str(property_building_type_id.external_id)] = property_building_type_id.id                                
+        if not building_type_id_external_id:
+            building_type_id_external_id = {}
+            building_type_ids = self.env['property.building.type'].search(
+                [
+                    ('id', '>', 0)
+                ]
+            )
+            if building_type_ids:
+                for building_type_id in building_type_ids:
+                    building_type_id_external_id[str(building_type_id.external_id)] = building_type_id.id
         # requests
         total_properties = 0
         url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/%s/towns/%s/ways/%s/numbers/%s/' % (
@@ -96,8 +108,10 @@ class PropertyNumber(models.Model):
             self.property_way_id.external_id,
             self.external_id
         )
-        headers = {'tsec': str(tsec)}
-        response = requests.get(url, headers=headers)            
+        headers = {
+            'tsec': str(tsec)
+        }
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             response_json = json.loads(response.text)
             if 'provinces' in response_json:
@@ -128,7 +142,7 @@ class PropertyNumber(models.Model):
                                                         self.companies_number = number['companiesNumber']
                                                     # officeNumbers
                                                     if 'officeNumbers' in number:
-                                                        self.office_numbers = number['officeNumbers']                                                                         
+                                                        self.office_numbers = number['officeNumbers']
                                                     # commercialsNumber
                                                     if 'commercialsNumber' in number:
                                                         self.commercials_number = number['commercialsNumber']
@@ -138,16 +152,16 @@ class PropertyNumber(models.Model):
                                                     # properties
                                                     if 'properties' in number:
                                                         for property in number['properties']:
-                                                            property_property_ids = self.env['property.property'].search(
+                                                            property_ids = self.env['property.property'].search(
                                                                 [
                                                                     ('property_number_id', '=', self.id),
                                                                     ('external_id', '=', str(property['id']))
                                                                 ]
                                                             )
-                                                            if len(property_property_ids) == 0:
+                                                            if len(property_ids) == 0:
                                                                 # creamos
                                                                 vals = {
-                                                                    'property_number_id': self.id,                                                    
+                                                                    'property_number_id': self.id,
                                                                     'external_id': str(property['id']),
                                                                     'source': 'bbva',
                                                                     'total_build_units': 0
@@ -180,32 +194,37 @@ class PropertyNumber(models.Model):
                                                                 if 'useCode' in property:
                                                                     if 'id' in property['useCode']:
                                                                         # if not exists create
-                                                                        if str(property['useCode']['id']) not in property_use_id_external_id:
+                                                                        if str(property['useCode']['id']) not in use_id_external_id:
                                                                             property_use_vals = {
                                                                                 'external_id': str(property['useCode']['id']),
                                                                                 'name': str(property['useCode']['name'].encode('utf-8')),
-                                                                            } 
-                                                                            property_use_obj = self.env['property.use'].sudo().create(property_use_vals)
+                                                                            }
+                                                                            use_obj = self.env['property.use'].sudo().create(property_use_vals)
                                                                             # add_array
-                                                                            property_use_id_external_id[str(property_use_vals['external_id'])] = property_use_obj.id
+                                                                            use_id_external_id[str(property_use_vals['external_id'])] = use_obj.id
                                                                         # check_if_exists and add
-                                                                        if str(property['useCode']['id']) in property_use_id_external_id:
-                                                                            vals['property_user_id'] = property_use_id_external_id[str(property['useCode']['id'])]
+                                                                        if str(property['useCode']['id']) in use_id_external_id:
+                                                                            vals['property_user_id'] = use_id_external_id[str(property['useCode']['id'])]
                                                                 # property_building_type_id
                                                                 if 'buildingType' in property:
                                                                     if 'id' in property['buildingType']:
                                                                         # if not exists create
-                                                                        if str(property['buildingType']['id']) not in property_building_type_id_external_id:
+                                                                        if str(property['buildingType']['id']) not in building_type_id_external_id:
                                                                             property_building_type_vals = {
                                                                                 'external_id': str(property['buildingType']['id']),
                                                                                 'name': str(property['buildingType']['name'].encode('utf-8')),
-                                                                            } 
-                                                                            property_building_type_obj = self.env['property.building.type'].sudo().create(property_building_type_vals)
+                                                                            }
+                                                                            building_type_obj = self.env['property.building.type'].sudo().create(
+                                                                                property_building_type_vals
+                                                                            )
                                                                             # add_array
-                                                                            property_building_type_id_external_id[str(property_building_type_vals['external_id'])] = property_building_type_obj.id
+                                                                            building_type_id_external_id[
+                                                                                str(property_building_type_vals['external_id'])
+                                                                            ] = building_type_obj.id
                                                                         # check_if_exists and add
-                                                                        if str(property['buildingType']['id']) in property_building_type_id_external_id:
-                                                                            vals['property_building_type_id'] = property_building_type_id_external_id[str(property['buildingType']['id'])]
+                                                                        if str(property['buildingType']['id']) in building_type_id_external_id:
+                                                                            vals['property_building_type_id'] = \
+                                                                                building_type_id_external_id[str(property['buildingType']['id'])]
                                                                 # create
                                                                 self.env['property.property'].sudo().create(vals)
                                                             # total_properties
@@ -218,38 +237,42 @@ class PropertyNumber(models.Model):
         self.date_last_check = current_date.strftime("%Y-%m-%d")
         self.total_properties = total_properties
         # return
-        return return_item     
-    
-    @api.multi    
-    def cron_check_numbers(self, cr=None, uid=False, context=None):
-        _logger.info('cron_check_numbers')
-        
-        property_way_ids = self.env['property.way'].search([('full', '=', False)])
-        if property_way_ids:
+        return return_item
+
+    @api.model
+    def cron_check_numbers(self):
+        way_ids = self.env['property.way'].search(
+            [
+                ('full', '=', False)
+            ]
+        )
+        if way_ids:
             count = 0
-            for property_way_id in property_way_ids:
+            for way_id in way_ids:
                 count += 1
                 # action_get_municipalities
-                return_item = property_way_id.action_get_numbers()[0]
+                return_item = way_id.action_get_numbers()[0]
                 if 'errors' in return_item:
-                    if return_item['errors'] == True:
+                    if return_item['errors']:
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
-                            _logger.info(paramos)
+                            break
                         else:
-                            _logger.info('Raro que sea un 403 pero pasamos')
+                            _logger.info(
+                                _('Raro que sea un 403 pero pasamos')
+                            )
                 # _logger
-                percent = (float(count)/float(len(property_way_ids)))*100
+                percent = (float(count)/float(len(way_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
-                    property_way_id.name.encode('utf-8'),
+                    way_id.name.encode('utf-8'),
                     percent,
                     '%',
                     count,
-                    len(property_way_ids)
+                    len(way_ids)
                 ))
                 # update
-                property_way_id.full = True
+                way_id.full = True
                 # Sleep 1 second to prevent error (if request)
                 time.sleep(1)
