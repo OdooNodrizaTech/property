@@ -239,7 +239,7 @@ class PropertyNumber(models.Model):
         # return
         return return_item
 
-    @api.models
+    @api.model
     def cron_check_numbers(self):
         way_ids = self.env['property.way'].search(
             [
