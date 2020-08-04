@@ -30,6 +30,7 @@ install:
 
 
 script:
+  - flake8 . --diff --max-line-length=120
   - travis_run_tests
 
 after_success:

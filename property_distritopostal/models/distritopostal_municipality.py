@@ -27,7 +27,7 @@ class DistritopostalMunicipality(models.Model):
     full = fields.Boolean(
         string='Full'
     )
-    
+
     @api.multi
     def action_get_ways(self):
         self.ensure_one()
@@ -36,11 +36,11 @@ class DistritopostalMunicipality(models.Model):
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'lxml')
             # tiene_calles = False
-            tiene_calles = False                    
+            tiene_calles = False
             h2_items = soup.findAll('h2')
             for h2_item in h2_items:
                 if 'Callejero de' in h2_item.text:
-                    tiene_calles = True                     
+                    tiene_calles = True
             # tiene_calles
             if not tiene_calles:
                 _logger.info(
@@ -54,8 +54,9 @@ class DistritopostalMunicipality(models.Model):
                             h2_item_as = h2_item.findAll('a')
                             if len(h2_item_as) > 0:
                                 h2_item_a_0 = h2_item_as[0]
-                                h2_item_a_0_title = h2_item_a_0.get('title')                                                                                
-                                if 'postales de la provincia de' not in h2_item_a_0_title:
+                                h2_item_a_0_title = h2_item_a_0.get('title')
+                                string_search = 'postales de la provincia de'
+                                if string_search not in h2_item_a_0_title:
                                     h2_item_a_0_href = str(h2_item_a_0.get('href'))
                                     # search
                                     postalcode_ids = self.env['distritopostal.postalcode'].search(
