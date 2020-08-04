@@ -151,7 +151,7 @@ class SedecatastroVia(models.Model):
                             'url': url,
                             'text': response.text
                         }
-                    }                                                                                    
+                    }
             else:
                 return {
                     'errors': True,

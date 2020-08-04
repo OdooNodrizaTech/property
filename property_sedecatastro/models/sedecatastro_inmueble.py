@@ -83,7 +83,7 @@ class SedecatastroInmueble(models.Model):
     )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )                       
+    )
 
     @api.multi
     def action_get_info_sedecatastro(self):
