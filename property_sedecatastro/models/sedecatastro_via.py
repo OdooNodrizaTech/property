@@ -15,7 +15,7 @@ _logger = logging.getLogger(__name__)
 class SedecatastroVia(models.Model):
     _name = 'sedecatastro.via'
     _description = 'Sedecatastro Via'
-    
+
     sedecatastro_provincia_id = fields.Many2one(
         comodel_name='sedecatastro.provincia',
         string='Sedecatastro Provincia'
@@ -31,7 +31,7 @@ class SedecatastroVia(models.Model):
     loine_cm = fields.Integer(
         string='Loine Cm',
         help='CODIGO INE DEL MUNICIPIO'
-    )        
+    )
     dir_cv = fields.Char(
         string='Dir Cv',
         help='CODIGO DE LA VIA SEGUN DGC'
@@ -52,8 +52,8 @@ class SedecatastroVia(models.Model):
     )
     last_number_know = fields.Integer(
         string='Last Number Know'
-    )    
-    
+    )
+
     @api.multi
     def action_get_numeros_sedecatastro(self):
         self.ensure_one()
@@ -65,9 +65,9 @@ class SedecatastroVia(models.Model):
             'error': ''
         }
         # operations
-        continue_check_numbers = True                
+        continue_check_numbers = True
         numero = 0
-        numero_request = 5        
+        numero_request = 5
         # while
         while continue_check_numbers:
             # pruebas_get
@@ -75,12 +75,12 @@ class SedecatastroVia(models.Model):
             params_url = {
                 'Provincia': str(self.sedecatastro_provincia_id.np),
                 'Municipio': str(self.sedecatastro_municipio_id.nm.encode('utf-8')),
-                'tipoVia': str(self.dir_tv),                    
+                'tipoVia': str(self.dir_tv),
                 'NomVia': str(self.dir_nv.encode('utf-8')),
-                'Numero': numero_request                                        
-            }            
+                'Numero': numero_request
+            }
             url_partial = urllib.urlencode(params_url)
-            url += '?'+str(url_partial)            
+            url += '?%s' % url_partial
             response = requests.get(url)
             if response.status_code == 200:
                 try:
@@ -108,7 +108,6 @@ class SedecatastroVia(models.Model):
                                     # params
                                     finca_item = str(nump_item['pc']['pc1'])
                                     hoja_plano_item = str(nump_item['pc']['pc2'])
-                                    
                                     numero_ids = self.env['sedecatastro.numero'].search(
                                         [
                                             ('sedecatastro_municipio_id', '=', self.id),
@@ -116,7 +115,7 @@ class SedecatastroVia(models.Model):
                                             ('finca', '=', str(finca_item)),
                                             ('hoja_plano', '=', str(hoja_plano_item))
                                         ]
-                                    )                                    
+                                    )
                                     if len(numero_ids) == 0:
                                         vals = {
                                             'sedecatastro_provincia_id': self.sedecatastro_provincia_id.id,
@@ -124,19 +123,19 @@ class SedecatastroVia(models.Model):
                                             'sedecatastro_via_id': self.id,
                                             'numero': numero_item,
                                             'finca': finca_item,
-                                            'hoja_plano': hoja_plano_item,                                        
-                                        }                                    
+                                            'hoja_plano': hoja_plano_item,
+                                        }
                                         self.env['sedecatastro.numero'].sudo().create(vals)
                     else:
                         return {
                             'errors': True,
                             'status_code': response.status_code,
-                            'error': {                                
+                            'error': {
                                 'params': params_url,
                                 'url': url,
                                 'text': numeros
                             }
-                        }                                                                                               
+                        }
                     # numero_has_changed
                     if not numero_has_changed:
                         continue_check_numbers = False
@@ -147,7 +146,7 @@ class SedecatastroVia(models.Model):
                     return {
                         'errors': True,
                         'status_code': response.status_code,
-                        'error': {                            
+                        'error': {
                             'params': params_url,
                             'url': url,
                             'text': response.text
@@ -157,7 +156,7 @@ class SedecatastroVia(models.Model):
                 return {
                     'errors': True,
                     'status_code': response.status_code,
-                    'error': {                        
+                    'error': {
                         'params': params_url,
                         'url': url,
                         'text': response.text
@@ -168,8 +167,8 @@ class SedecatastroVia(models.Model):
         self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
         return return_item
-        
-    @api.model    
+
+    @api.model
     def cron_check_sedecatastro_vias(self):
         municipio_ids = self.env['sedecatastro.municipio'].search(
             [
@@ -187,7 +186,7 @@ class SedecatastroVia(models.Model):
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
-                            _logger.info(paramos)
+                            break
                         else:
                             _logger.info(
                                 _('Raro que sea un 403 pero pasamos')

@@ -6,13 +6,14 @@ import requests
 import xmltodict
 import json
 from datetime import datetime
+import time
 _logger = logging.getLogger(__name__)
 
 
 class SedecatastroMunicipio(models.Model):
     _name = 'sedecatastro.municipio'
     _description = 'Sedecatastro Municipio'
-    
+
     sedecatastro_provincia_id = fields.Many2one(
         comodel_name='sedecatastro.provincia',
         string='Sedecatastro Provincia'
@@ -47,7 +48,7 @@ class SedecatastroMunicipio(models.Model):
         string='Total vias',
         help='NUMERO DE ITEMS DEVUELTOS EN LA LISTA CALLEJERO'
     )
-    
+
     @api.multi
     def action_get_vias_sedecatastro(self):
         self.ensure_one()
@@ -61,15 +62,15 @@ class SedecatastroMunicipio(models.Model):
         # request
         url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/ConsultaVia'
         data_obj = {
-            'Provincia': self.sedecatastro_provincia_id.np, 
-            'Municipio': self.nm, 
-            'TipoVia': '', 
+            'Provincia': self.sedecatastro_provincia_id.np,
+            'Municipio': self.nm,
+            'TipoVia': '',
             'NombreVia': ''
-        }                  
-        response = requests.post(url, data=data_obj)        
+        }
+        response = requests.post(url, data=data_obj)
         if response.status_code == 200:
             xmltodict_response = xmltodict.parse(response.text)
-            vias = json.loads(json.dumps(xmltodict_response))            
+            vias = json.loads(json.dumps(xmltodict_response))
             if 'consulta_callejero' in vias:
                 if 'callejero' in vias['consulta_callejero']:
                     if 'calle' in vias['consulta_callejero']['callejero']:
@@ -91,7 +92,7 @@ class SedecatastroMunicipio(models.Model):
                             if len(sedecatastro_via_ids) == 0:
                                 # Fix dir tv
                                 if type(calle_item['dir']['tv']) is dict:
-                                    calle_item['dir']['tv'] = ''                                        
+                                    calle_item['dir']['tv'] = ''
                                 # creamos
                                 vals = {
                                     'sedecatastro_provincia_id': self.sedecatastro_provincia_id.id,
@@ -100,8 +101,8 @@ class SedecatastroMunicipio(models.Model):
                                     'loine_cm': str(calle_item['loine']['cm']),
                                     'dir_cv': str(calle_item['dir']['cv']),
                                     'dir_tv': str(calle_item['dir']['tv'].encode('utf-8')),
-                                    'dir_nv': str(calle_item['dir']['nv'].encode('utf-8')),                                        
-                                }                                    
+                                    'dir_nv': str(calle_item['dir']['nv'].encode('utf-8')),
+                                }
                                 self.env['sedecatastro.via'].sudo().create(vals)
                         # update date_last_check
                         self.date_last_check = current_date.strftime("%Y-%m-%d")
@@ -109,26 +110,26 @@ class SedecatastroMunicipio(models.Model):
                 return {
                     'errors': True,
                     'status_code': response.status_code,
-                    'error': {                        
+                    'error': {
                         'url': url,
                         'data': data_obj,
                         'text': vias
                     }
-                }                        
+                }
         else:
             return {
                 'errors': True,
                 'status_code': response.status_code,
-                'error': {                    
+                'error': {
                     'url': url,
                     'data': data_obj,
                     'text': response.text
                 }
             }
         # return
-        return return_item             
-    
-    @api.model    
+        return return_item
+
+    @api.model
     def cron_check_sedecatastro_municipios(self):
         provincia_ids = self.env['sedecatastro.provincia'].search(
             [
@@ -146,7 +147,7 @@ class SedecatastroMunicipio(models.Model):
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
-                            _logger.info(paramos)
+                            break
                         else:
                             _logger.info(
                                 _('Raro que sea un 403 pero pasamos')

@@ -136,7 +136,7 @@ class PropertyWayTypeReport(models.Model):
         self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
         return return_item
-    
+
     @api.model
     def cron_check_ways_type_report(self):
         type_report_ids = self.env['property.way.type.report'].search(
