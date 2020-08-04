@@ -9,11 +9,11 @@ _logger = logging.getLogger(__name__)
 class DistritopostalPostalcode(models.Model):
     _name = 'distritopostal.postalcode'
     _description = 'Distritopostal Postalcode'
-    
+
     distritopostal_municipality_id = fields.Many2one(
         comodel_name='distritopostal.municipality',
         string='Distritopostal Municipality Id'
-    )    
+    )
     name = fields.Char(
         string='Name'
     )
@@ -23,7 +23,7 @@ class DistritopostalPostalcode(models.Model):
     full = fields.Boolean(
         string='Full'
     )
-    
+
     @api.multi
     def action_get_ways(self):
         self.ensure_one()
@@ -31,15 +31,15 @@ class DistritopostalPostalcode(models.Model):
         response = requests.get(url)
         if response.status_code == 200:
             _logger.info(url)
-            soup = BeautifulSoup(response.text, 'lxml')            
+            soup = BeautifulSoup(response.text, 'lxml')
             # tiene_calles
             change_full = False
-            tiene_calles = False                    
+            tiene_calles = False
             h2_items = soup.findAll('h2')
             for h2_item in h2_items:
                 if 'Callejero de' in h2_item.text:
                     tiene_calles = True
-            
+
             if not tiene_calles:
                 _logger.info('No tiene calles, continuamos')
                 # revisar numero de tablas
@@ -70,7 +70,7 @@ class DistritopostalPostalcode(models.Model):
                             _('PARECE que las 2 tablas ultimas son las calles, procedemos')
                         )
                         # operations
-                        table_ids_check = [1,2]                                                                
+                        table_ids_check = [1 ,2]
                         # change_full
                         change_full = True
                     else:
@@ -79,8 +79,7 @@ class DistritopostalPostalcode(models.Model):
                               'le corresponde de verdad')
                         )
                         _logger.info(
-                            _('Buscamos la url =%s')
-                              % self.distritopostal_municipality_id.url
+                            _('Buscamos la url =%s') % self.distritopostal_municipality_id.url
                         )
                         # operations
                         h3_items = soup.findAll('h3')
@@ -106,46 +105,46 @@ class DistritopostalPostalcode(models.Model):
                         elif self.name == '01207':
                             table_ids_check = [2, 3]
                         elif self.name == '37111':
-                           table_ids_check = [4]
+                            table_ids_check = [4]
                         elif self.name == '33127':
-                           table_ids_check = [2, 3]
+                            table_ids_check = [2, 3]
                         elif self.name == '32720':
-                           table_ids_check = [0, 1]
+                            table_ids_check = [0, 1]
                         elif self.name == '01206':
-                           table_ids_check = [0, 1]
+                            table_ids_check = [0, 1]
                         elif self.name == '27373':
-                           table_ids_check = [0, 1]
+                            table_ids_check = [0, 1]
                         elif self.name == '37186':
-                           table_ids_check = [0, 1]
+                            table_ids_check = [0, 1]
                         elif self.name == '37460':
-                           table_ids_check = [4, 5]
+                            table_ids_check = [4, 5]
                         elif self.name == '01520':
-                           table_ids_check = [0, 1]
+                            table_ids_check = [0, 1]
                         elif self.name == '01192':
-                           table_ids_check = [0, 1]
+                            table_ids_check = [0, 1]
                         elif self.name == '37193':
-                           table_ids_check = [0, 1]
+                            table_ids_check = [0, 1]
                         elif self.name == '37185':
-                           table_ids_check = [4, 5]
+                            table_ids_check = [4, 5]
                         elif self.name == '37209':
-                           table_ids_check = [4, 5]
+                            table_ids_check = [4, 5]
                         elif self.name == '33813':
-                           table_ids_check = [0, 1]
+                            table_ids_check = [0, 1]
                         elif self.name == '37139':
-                           table_ids_check = [0]
+                            table_ids_check = [0]
                         elif self.name == '15686':
-                           table_ids_check = [2, 3]
+                            table_ids_check = [2, 3]
                         elif self.name == '37115':
-                           table_ids_check = [6, 7]
+                            table_ids_check = [6, 7]
                         elif self.name == '15689':
-                           table_ids_check = [0, 1]
+                            table_ids_check = [0, 1]
                         elif self.name == '37609':
-                           table_ids_check = [4, 5]
+                            table_ids_check = [4, 5]
                         # table_ids_check
-                        _logger.info('table_ids_check')                                                   
+                        _logger.info('table_ids_check')
                         _logger.info(table_ids_check)
                         # change_full
-                        change_full = True                            
+                        change_full = True
                     # operations table_ids_check
                     if len(table_ids_check) == 0:
                         _logger.info(
@@ -188,18 +187,23 @@ class DistritopostalPostalcode(models.Model):
                                                 # search
                                                 way_ids = self.env['distritopostal.way'].search(
                                                     [
-                                                        ('distritopostal_municipality_id', '=', self.distritopostal_municipality_id.id),
+                                                        (
+                                                            'distritopostal_municipality_id',
+                                                            '=',
+                                                            self.distritopostal_municipality_id.id
+                                                        ),
                                                         ('name', '=', calle_nombre)
                                                     ]
                                                 )
                                                 if len(way_ids) == 0:
                                                     # vals
                                                     vals = {
-                                                        'distritopostal_municipality_id': self.distritopostal_municipality_id.id,
+                                                        'distritopostal_municipality_id':
+                                                            self.distritopostal_municipality_id.id,
                                                         'distritopostal_postalcode_id': self.id,
-                                                        'name': str(calle_nombre)                       
+                                                        'name': str(calle_nombre)
                                                     }
-                                                    #create
+                                                    # create
                                                     self.env['distritopostal.way'].sudo().create(vals)
             else:
                 _logger.info(
@@ -226,21 +230,26 @@ class DistritopostalPostalcode(models.Model):
                                         # search
                                         way_ids = self.env['distritopostal.way'].search(
                                             [
-                                                ('distritopostal_municipality_id', '=', self.distritopostal_municipality_id.id),
+                                                (
+                                                    'distritopostal_municipality_id',
+                                                    '=',
+                                                    self.distritopostal_municipality_id.id
+                                                ),
                                                 ('name', '=', calle_nombre)
                                             ]
                                         )
                                         if len(way_ids) == 0:
                                             # vals
                                             vals = {
-                                                'distritopostal_municipality_id': self.distritopostal_municipality_id.id,
+                                                'distritopostal_municipality_id':
+                                                    self.distritopostal_municipality_id.id,
                                                 'distritopostal_postalcode_id': self.id,
-                                                'name': str(calle_nombre)                       
+                                                'name': str(calle_nombre)
                                             }
                                             # create
                                             self.env['distritopostal.way'].sudo().create(vals)
                 # change_full
-                change_full = True            
+                change_full = True
             # change_full
             if change_full:
                 self.full = True

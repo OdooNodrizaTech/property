@@ -70,12 +70,12 @@ class DistritopostalMunicipality(models.Model):
                                         vals = {
                                             'distritopostal_municipality_id': self.id,
                                             'name': str(h2_item_a_0_href.replace('/', '')),
-                                            'url': str(h2_item_a_0_href),                       
+                                            'url': str(h2_item_a_0_href),
                                         }
                                         # create
                                         self.env['distritopostal.postalcode'].sudo().create(vals)
                 # update
-                self.full = True                                                    
+                self.full = True
             else:
                 div_datatab_items = soup.findAll('div', {"class": "datatab"})
                 # table_items = soup.findAll('table')
@@ -104,14 +104,14 @@ class DistritopostalMunicipality(models.Model):
                                             # vals
                                             vals = {
                                                 'distritopostal_municipality_id': self.id,
-                                                'name': str(calle_nombre)                       
+                                                'name': str(calle_nombre)
                                             }
                                             # create
                                             self.env['distritopostal.way'].sudo().create(vals)
                 # update
                 self.full = True
-    
-    @api.model    
+
+    @api.model
     def cron_check_municipalities_distritopostal(self):
         letters = [
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
@@ -119,7 +119,10 @@ class DistritopostalMunicipality(models.Model):
         ]
         url = 'http://distritopostal.es/ajax/qmunicipio.php?term='
         for letter in letters:
-            url_letter = url+str(letter)            
+            url_letter = "%s%s" % (
+                url,
+                letter
+            )
             response = requests.get(url_letter)
             if response.status_code == 200:
                 response_json = json.loads(response.text)
@@ -136,12 +139,12 @@ class DistritopostalMunicipality(models.Model):
                         state = name_split[len(name_split)-1].strip()
                         # name remove state name
                         str_replace = ', '+str(state)
-                        name = name.replace(str_replace, '').strip()               
+                        name = name.replace(str_replace, '').strip()
                         # vals
                         vals = {
                             'external_id': item['lid'],
                             'name': str(name),
-                            'url': str(item['url'])                        
+                            'url': str(item['url'])
                         }
                         # distritopostal_state_id
                         state_ids = self.env['distritopostal.state'].search(
@@ -158,7 +161,7 @@ class DistritopostalMunicipality(models.Model):
                             # vals
                             state_vals = {
                                 'name': str(state),
-                                'url': str(url_state),                      
+                                'url': str(url_state)
                             }
                             state_obj = self.env['distritopostal.state'].sudo().create(
                                 state_vals

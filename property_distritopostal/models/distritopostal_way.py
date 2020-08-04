@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 class DistritopostalWay(models.Model):
     _name = 'distritopostal.way'
     _description = 'Distritopostal Way'
-    
+
     distritopostal_municipality_id = fields.Many2one(
         comodel_name='distritopostal.municipality',
         string='Distritopostal Municipality Id'
@@ -15,12 +15,12 @@ class DistritopostalWay(models.Model):
     distritopostal_postalcode_id = fields.Many2one(
         comodel_name='distritopostal.postalcode',
         string='Distritopostal Postalcode Id'
-    )    
+    )
     name = fields.Char(
         string='Name'
     )
-    
-    @api.model    
+
+    @api.model
     def cron_check_ways_distritopostal(self):
         _logger.info('cron_check_ways_distritopostal')
         # postalcode
