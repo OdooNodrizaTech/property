@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 class PropertyWayReferenceSale(models.Model):
     _name = 'property.way.reference.sale'
     _description = 'Property Way Reference Sale'
-    
+
     property_way_id = fields.Many2one(
         comodel_name='property.way',
         string='Property Way Id'
@@ -39,22 +39,22 @@ class PropertyWayReferenceSale(models.Model):
     )
     minimum_surface_area = fields.Float(
         string='Minimum Surface Area'
-    )                        
+    )
     full = fields.Boolean(
         string='Full'
     )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )    
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
-    )    
-    
-    @api.multi    
+    )
+
+    @api.multi
     def bbva_generate_tsec(self):
         self.ensure_one()
         tsec = False
@@ -73,5 +73,5 @@ class PropertyWayReferenceSale(models.Model):
             response_json = json.loads(response.text)
             if 'access_token' in response_json:
                 tsec = str(response_json['access_token'])
-            
+
         return tsec

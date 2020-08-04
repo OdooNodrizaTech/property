@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PropertyMunicipality(models.Model):
     _name = 'property.municipality'
     _description = 'Property Municipality'
-    
+
     property_state_id = fields.Many2one(
         comodel_name='property.state',
         string='Property State Id'
@@ -33,10 +33,10 @@ class PropertyMunicipality(models.Model):
     )
     full_ways = fields.Boolean(
         string='Full full_ways'
-    )    
+    )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )    
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
@@ -50,7 +50,7 @@ class PropertyMunicipality(models.Model):
     total_ways = fields.Integer(
         string='Total Ways'
     )
-    
+
     @api.multi
     def action_update_municipality(self):
         self.ensure_one()
@@ -73,29 +73,29 @@ class PropertyMunicipality(models.Model):
             url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/' % self.external_id
             payload = {
                 '$filter': '(name=='+str(municipality_id.name.encode('utf-8'))+')'
-            }                         
-            response = requests.get(url, params=payload)                    
+            }
+            response = requests.get(url, params=payload)
             if response.status_code == 200:
                 response_json = json.loads(response.text)
                 if 'provinces' in response_json:
                     for province in response_json['provinces']:
                         if 'municipalities' in province:
-                            for municipality in province['municipalities']: 
+                            for municipality in province['municipalities']:
                                 if 'location' in municipality:
                                     if 'value' in municipality['location']:
                                         location_value = municipality['location']['value'].replace(',', '.').split(';')
                                         self.latitude = str(location_value[1])
                                         self.longitude = str(location_value[0].replace('-.', '-0.'))
                 # Sleep 1 second to prevent error (if request)
-                time.sleep(1)                                                                        
+                time.sleep(1)
             else:
                 _logger.info('status_code')
-                _logger.info(response.status_code)                    
+                _logger.info(response.status_code)
         # update date_last_check
-        self.date_last_check = current_date.strftime("%Y-%m-%d")                                                
+        self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
         return return_item
-    
+
     @api.multi
     def action_get_towns(self):
         self.ensure_one()
@@ -130,14 +130,14 @@ class PropertyMunicipality(models.Model):
                                     if len(town_ids) == 0:
                                         # creamos
                                         vals = {
-                                            'property_municipality_id': self.id,                                                    
+                                            'property_municipality_id': self.id,
                                             'external_id': str(town['id']),
                                             'name': str(town['name'].encode('utf-8')),
                                             'source': 'bbva'
                                         }
                                         self.env['property.town'].sudo().create(vals)
                                         # total_towns
-                                        total_towns += 1                                        
+                                        total_towns += 1
         else:
             _logger.info('status_code')
             _logger.info(response.status_code)
@@ -145,8 +145,8 @@ class PropertyMunicipality(models.Model):
         self.date_last_check = current_date.strftime("%Y-%m-%d")
         self.total_towns = total_towns
         # return
-        return return_item                                
-    
+        return return_item
+
     @api.model
     def cron_check_municipalities(self):
         state_ids = self.env['property.state'].search(
@@ -165,7 +165,7 @@ class PropertyMunicipality(models.Model):
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
-                            _logger.info(paramos)
+                            break
                         else:
                             _logger.info(
                                 _('Raro que sea un 403 pero pasamos')
@@ -174,17 +174,17 @@ class PropertyMunicipality(models.Model):
                 percent = (float(count)/float(len(state_ids)))*100
                 percent = "{0:.2f}".format(percent)
                 _logger.info('%s - %s%s (%s/%s)' % (
-                    property_state_id.id,
+                    state_id.id,
                     percent,
                     '%',
                     count,
                     len(state_ids)
                 ))
                 # update
-                property_state_id.full = True
+                state_id.full = True
                 # Sleep 1 second to prevent error (if request)
                 time.sleep(1)
-    
+
     @api.model
     def cron_update_municipalities(self):
         municipality_ids = self.env['property.municipality'].search(
@@ -203,7 +203,7 @@ class PropertyMunicipality(models.Model):
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
-                            _logger.info(paramos)
+                            break
                         else:
                             _logger.info(
                                 _('Raro que sea un 403 pero pasamos')
@@ -218,7 +218,7 @@ class PropertyMunicipality(models.Model):
                     count,
                     len(municipality_ids)
                 ))
-                
+
     @api.multi
     def action_get_ways(self):
         self.ensure_one()
@@ -264,10 +264,10 @@ class PropertyMunicipality(models.Model):
                     )
                     payload = {
                         '$filter': '(name=='+str(way_id.name.encode('utf-8'))+')'
-                    }                         
+                    }
                     response = requests.get(url, params=payload)
                     if response.status_code == 200:
-                        response_json = json.loads(response.text)                        
+                        response_json = json.loads(response.text)
                         if 'provinces' in response_json:
                             for province in response_json['provinces']:
                                 if 'municipalities' in province:
@@ -324,18 +324,18 @@ class PropertyMunicipality(models.Model):
                                                                     # distritopostal_way_id
                                                                     way_id.property_way_id = way_obj.id
                                                                     # total_ways
-                                                                    total_ways += 1                        
+                                                                    total_ways += 1
                         # Sleep 1 second to prevent error (if request)
                         time.sleep(1)
                     else:
                         _logger.info('status_code')
-                        _logger.info(response.status_code)                                            
+                        _logger.info(response.status_code)
             # update date_last_check
             self.date_last_check = current_date.strftime("%Y-%m-%d")
-            self.total_ways = total_ways            
+            self.total_ways = total_ways
         # return
         return return_item
-    
+
     @api.model
     def cron_check_ways(self):
         municipality_ids = self.env['property.municipality'].search(
@@ -356,11 +356,11 @@ class PropertyMunicipality(models.Model):
                     # action_get_municipalities
                     return_item = municipality_id.action_get_ways()[0]
                     if 'errors' in return_item:
-                        if return_item['errors'] == True:
+                        if return_item['errors']:
                             _logger.info(return_item)
-                            #fix
+                            # fix
                             if return_item['status_code'] != 403:
-                                _logger.info(paramos)
+                                break
                             else:
                                 _logger.info('Raro que sea un 403 pero pasamos')
                     # _logger

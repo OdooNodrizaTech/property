@@ -34,22 +34,22 @@ class PropertyWayAreaReport(models.Model):
     )
     percentage = fields.Float(
         string='Percentage'
-    )                    
+    )
     full = fields.Boolean(
         string='Full'
     )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )    
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
-    )    
-    
-    @api.multi    
+    )
+
+    @api.multi
     def bbva_generate_tsec(self):
         self.ensure_one()
         tsec = False
@@ -68,9 +68,9 @@ class PropertyWayAreaReport(models.Model):
             response_json = json.loads(response.text)
             if 'access_token' in response_json:
                 tsec = str(response_json['access_token'])
-            
+
         return tsec
-        
+
     @api.multi
     def action_check(self, tsec):
         self.ensure_one()
@@ -84,21 +84,21 @@ class PropertyWayAreaReport(models.Model):
         # requests
         url = 'https://www.bbva.es/ASO/financialPropertyInformation/V01/getPropertyAreaReport/'
         body_obj = {
-            "location":{
-                "latitude": str(self.property_way_id.latitude),                    
-                "longitude": str(self.property_way_id.longitude)                
+            "location": {
+                "latitude": str(self.property_way_id.latitude),
+                "longitude": str(self.property_way_id.longitude)
             },
             "radius": self.radius,
-            "operationType":{
+            "operationType": {
                 "id": str(self.property_transaction_type_id.external_id)
-            }            
-        } 
+            }
+        }
         headers = {
             'content-type': 'application/json',
             'tsec': str(tsec)
         }
         _logger.info(self.property_way_id.id)
-        response = requests.post(url, headers=headers, data=json.dumps(body_obj))        
+        response = requests.post(url, headers=headers, data=json.dumps(body_obj))
         if response.status_code == 200:
             response_json = json.loads(response.text)
             if 'flatReport' in response_json:
@@ -117,7 +117,7 @@ class PropertyWayAreaReport(models.Model):
                     self.percentage = response_json['flatReport']['percentage']
                 # bedroomsReport
                 if 'bedroomsReport' in response_json['flatReport']:
-                    if len(response_json['flatReport']['bedroomsReport'])>0:
+                    if len(response_json['flatReport']['bedroomsReport']) > 0:
                         for bedrooms_report_item in response_json['flatReport']['bedroomsReport']:
                             if 'bedroomsNumber' in bedrooms_report_item:
                                 # beedroom_number
@@ -130,28 +130,28 @@ class PropertyWayAreaReport(models.Model):
                                     ]
                                 )
                                 if len(ids) == 0:
-                                    #vals
+                                    # vals
                                     vals = {
                                         'property_way_area_report_id': self.id,
                                         'beedroom_number': beedroom_number
                                     }
-                                    #averageSurfaceArea
+                                    # averageSurfaceArea
                                     if 'averageSurfaceArea' in bedrooms_report_item:
                                         vals['average_surface'] = bedrooms_report_item['averageSurfaceArea']
-                                    #averagePrice
+                                    # averagePrice
                                     if 'averagePrice' in bedrooms_report_item:
                                         if 'amount' in bedrooms_report_item['averagePrice']:
                                             vals['average_price'] = bedrooms_report_item['averagePrice']['amount']
-                                    #percentage
+                                    # percentage
                                     if 'percentage' in bedrooms_report_item:
                                         vals['percentage'] = bedrooms_report_item['percentage']
-                                    #create
+                                    # create
                                     self.env['property.way.area.report.detail'].sudo().create(vals)
         # update date_last_check + total_build_units
-        self.date_last_check = current_date.strftime("%Y-%m-%d")            
+        self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
-        return return_item                                                    
-    
+        return return_item
+
     @api.model
     def cron_check_ways_area_report(self):
         transaction_type_ids = self.env['property.transaction.type'].search(
@@ -190,7 +190,7 @@ class PropertyWayAreaReport(models.Model):
                             'property_transaction_type_id': transaction_type_id.id,
                             'radius': 1000,
                             'source': 'bbva'
-                        }                
+                        }
                         self.env['property.way.area.report'].sudo().create(vals)
         # now check all property.way.area.report
         area_report_ids = self.env['property.way.area.report'].search(
@@ -209,11 +209,11 @@ class PropertyWayAreaReport(models.Model):
                     # action_check
                     return_item = area_report_id.action_check(tsec)[0]
                     if 'errors' in return_item:
-                        if return_item['errors'] == True:
+                        if return_item['errors']:
                             _logger.info(return_item)
-                            #fix
+                            # fix
                             if return_item['status_code'] != 403:
-                                _logger.info(paramos)
+                                break
                             else:
                                 _logger.info(
                                     _('Raro que sea un 403 pero pasamos')

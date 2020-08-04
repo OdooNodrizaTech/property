@@ -1,9 +1,9 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
 from odoo import api, fields, models, _
-import requests, xmltodict, json
+import requests
+import json
 from datetime import datetime
-import pytz
 import time
 _logger = logging.getLogger(__name__)
 
@@ -11,17 +11,17 @@ _logger = logging.getLogger(__name__)
 class PropertyWayTypeReport(models.Model):
     _name = 'property.way.type.report'
     _description = 'Property Way Type Report'
-    
+
     property_way_id = fields.Many2one(
         comodel_name='property.way',
         string='Property Way Id'
-    )                    
+    )
     full = fields.Boolean(
         string='Full'
     )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )    
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
@@ -29,8 +29,8 @@ class PropertyWayTypeReport(models.Model):
         string='Source',
         default='bbva'
     )
-    
-    @api.multi    
+
+    @api.multi
     def bbva_generate_tsec(self):
         self.ensure_one()
         tsec = False
@@ -49,9 +49,9 @@ class PropertyWayTypeReport(models.Model):
             response_json = json.loads(response.text)
             if 'access_token' in response_json:
                 tsec = str(response_json['access_token'])
-            
+
         return tsec
-        
+
     @api.multi
     def action_check(self, tsec):
         self.ensure_one()
@@ -65,17 +65,17 @@ class PropertyWayTypeReport(models.Model):
         # requests
         url = 'https://www.bbva.es/ASO/financialPropertyInformation/V01/getPropertyTypeReport/'
         body_obj = {
-            "location":{
-                "latitude": str(self.property_way_id.latitude),                    
-                "longitude": str(self.property_way_id.longitude)                
-            }            
-        } 
+            "location": {
+                "latitude": str(self.property_way_id.latitude),
+                "longitude": str(self.property_way_id.longitude)
+            }
+        }
         headers = {
             'content-type': 'application/json',
             'tsec': str(tsec)
         }
         _logger.info(self.property_way_id.id)
-        response = requests.post(url, headers=headers, data=json.dumps(body_obj))        
+        response = requests.post(url, headers=headers, data=json.dumps(body_obj))
         if response.status_code == 200:
             response_json = json.loads(response.text)
             if 'levelDistribution' in response_json:
@@ -121,19 +121,21 @@ class PropertyWayTypeReport(models.Model):
                                         if 'detachedPropertyDistribution' in level_distribution_item:
                                             # freeOffer
                                             if 'freeOffer' in level_distribution_item['detachedPropertyDistribution']:
-                                                vals['detached_property_distribution_free_offer'] = level_distribution_item['detachedPropertyDistribution']['freeOffer']
+                                                vals['detached_property_distribution_free_offer'] = \
+                                                    level_distribution_item['detachedPropertyDistribution']['freeOffer']
                                             # bankOffer
                                             if 'bankOffer' in level_distribution_item['detachedPropertyDistribution']:
-                                                vals['detached_property_distribution_bank_offer'] = level_distribution_item['detachedPropertyDistribution']['bankOffer']
+                                                vals['detached_property_distribution_bank_offer'] = \
+                                                    level_distribution_item['detachedPropertyDistribution']['bankOffer']
                                             # total
                                             if 'total' in level_distribution_item['detachedPropertyDistribution']:
                                                 vals['detached_property_distribution_total'] = level_distribution_item['detachedPropertyDistribution']['total']
                                         # create
                                         self.env['property.way.type.report.detail'].sudo().create(vals)
         # update date_last_check + total_build_units
-        self.date_last_check = current_date.strftime("%Y-%m-%d")            
+        self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
-        return return_item                    
+        return return_item
     
     @api.model
     def cron_check_ways_type_report(self):
@@ -164,7 +166,7 @@ class PropertyWayTypeReport(models.Model):
                 vals = {
                     'property_way_id': way_id.id,
                     'source': 'bbva'
-                }                
+                }
                 self.env['property.way.type.report'].sudo().create(vals)
         # now check all property.way.type.report
         type_report_ids = self.env['property.way.type.report'].search(
@@ -183,11 +185,11 @@ class PropertyWayTypeReport(models.Model):
                     # action_check
                     return_item = type_report_id.action_check(tsec)[0]
                     if 'errors' in return_item:
-                        if return_item['errors'] == True:
+                        if return_item['errors']:
                             _logger.info(return_item)
                             # fix
                             if return_item['status_code'] != 403:
-                                _logger.info(paramos)
+                                break
                             else:
                                 _logger.info(
                                     _('Raro que sea un 403 pero pasamos')
@@ -205,6 +207,6 @@ class PropertyWayTypeReport(models.Model):
                     ))
                     # update
                     if return_item['status_code'] != 403:
-                        property_way_type_report_id.full = True
+                        type_report_id.full = True
                     # Sleep 1 second to prevent error (if request)
                     time.sleep(1)

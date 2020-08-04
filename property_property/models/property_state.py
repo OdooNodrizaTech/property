@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PropertyState(models.Model):
     _name = 'property.state'
     _description = 'Property State'
-    
+
     external_id = fields.Char(
         string='External Id'
     )
@@ -33,7 +33,7 @@ class PropertyState(models.Model):
     res_country_state_id = fields.Many2one(
         comodel_name='res.country.state',
         string='Res Country State Id'
-    )    
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
@@ -44,7 +44,7 @@ class PropertyState(models.Model):
     total_municipalities = fields.Integer(
         string='Total municipalities'
     )
-    
+
     @api.multi
     def action_get_municipalities(self):
         self.ensure_one()
@@ -70,7 +70,7 @@ class PropertyState(models.Model):
             )
             # operations
             if municipality_ids:
-                count = 0            
+                count = 0
                 for municipality_id in municipality_ids:
                     count += 1
                     # _logger
@@ -87,8 +87,8 @@ class PropertyState(models.Model):
                     url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/' % self.external_id
                     payload = {
                         '$filter': '(name=='+str(municipality_id.name.encode('utf-8'))+')'
-                    }                         
-                    response = requests.get(url, params=payload)                    
+                    }
+                    response = requests.get(url, params=payload)
                     if response.status_code == 200:
                         response_json = json.loads(response.text)
                         if 'provinces' in response_json:
@@ -100,11 +100,11 @@ class PropertyState(models.Model):
                                                 ('property_state_id', '=', self.id),
                                                 ('external_id', '=', str(municipality['id']))
                                             ]
-                                        ) 
+                                        )
                                         if len(municipality_ids2) == 0:
                                             # creamos
                                             vals = {
-                                                'property_state_id': self.id,                                                                                                        
+                                                'property_state_id': self.id,
                                                 'external_id': str(municipality['id']),
                                                 'name': str(municipality['name'].encode('utf-8')),
                                                 'source': 'bbva',
@@ -122,15 +122,15 @@ class PropertyState(models.Model):
                                             # update
                                             municipality_id.property_municipality_id = municipality_obj.id
                         # Sleep 1 second to prevent error (if request)
-                        time.sleep(1)                                                                        
+                        time.sleep(1)
                     else:
                         _logger.info('status_code')
-                        _logger.info(response.status_code)                    
+                        _logger.info(response.status_code)
             # update date_last_check
-            self.date_last_check = current_date.strftime("%Y-%m-%d")                                                
+            self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
-        return return_item    
-    
+        return return_item
+
     @api.model
     def cron_check_states(self):
         # return
@@ -176,7 +176,7 @@ class PropertyState(models.Model):
             return_item = {
                 'errors': True,
                 'status_code': response.status_code,
-                'error': {                    
+                'error': {
                     'url': url,
                     'text': response.text
                 }

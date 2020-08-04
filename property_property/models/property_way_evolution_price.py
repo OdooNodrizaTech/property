@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PropertyWayEvolutionPrice(models.Model):
     _name = 'property.way.evolution.price'
     _description = 'Property Way Evolution Price'
-    
+
     property_way_id = fields.Many2one(
         comodel_name='property.way',
         string='Property Way Id'
@@ -19,29 +19,29 @@ class PropertyWayEvolutionPrice(models.Model):
     property_home_type_id = fields.Many2one(
         comodel_name='property.home.type',
         string='Property Home Type Id'
-    )    
+    )
     property_transaction_type_id = fields.Many2one(
         comodel_name='property.transaction.type',
         string='Property Transaction Type Id'
-    )    
+    )
     radius = fields.Integer(
         string='Surface Area'
-    )                
+    )
     full = fields.Boolean(
         string='Full'
     )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )    
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
         ],
         string='Source2',
         default='bbva'
-    )    
-    
-    @api.multi    
+    )
+
+    @api.multi
     def bbva_generate_tsec(self):
         self.ensure_one()
         tsec = False
@@ -60,9 +60,9 @@ class PropertyWayEvolutionPrice(models.Model):
             response_json = json.loads(response.text)
             if 'access_token' in response_json:
                 tsec = str(response_json['access_token'])
-            
+
         return tsec
-    
+
     @api.multi
     def action_check(self, tsec):
         self.ensure_one()
@@ -76,20 +76,20 @@ class PropertyWayEvolutionPrice(models.Model):
         # requests
         url = 'https://www.bbva.es/ASO/financialPropertyInformation/V01/getEvolutionPriceReport/'
         body_obj = {
-            "location":{
-                "latitude": str(self.property_way_id.latitude),                    
-                "longitude": str(self.property_way_id.longitude)                
+            "location": {
+                "latitude": str(self.property_way_id.latitude),
+                "longitude": str(self.property_way_id.longitude)
             },
-            "homeType":{
+            "homeType": {
                 "id": str(self.property_home_type_id.external_id)
             },
-            "transactionType":{
+            "transactionType": {
                 "id": str(self.property_transaction_type_id.external_id)
             },
             "monthsQuantity": 36,
             "monthsBetweenStreches": 1,
             "radius": self.radius
-        } 
+        }
         headers = {
             'content-type': 'application/json',
             'tsec': str(tsec)
@@ -100,7 +100,7 @@ class PropertyWayEvolutionPrice(models.Model):
             response_json = json.loads(response.text)
             if 'report' in response_json:
                 if len(response_json['report']) > 0:
-                     for report_item in response_json['report']:
+                    for report_item in response_json['report']:
                         if 'year' in report_item:
                             if 'month' in report_item:
                                 price_detail_ids = self.env['property.way.evolution.price.detail'].search(
@@ -134,17 +134,15 @@ class PropertyWayEvolutionPrice(models.Model):
                                     # create
                                     self.env['property.way.evolution.price.detail'].sudo().create(vals)
         # update date_last_check + total_build_units
-        self.date_last_check = current_date.strftime("%Y-%m-%d")            
+        self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
         return return_item
-        
+
     @api.model
     def cron_check_ways_evolution_price(self):
         # def
         home_type_ids = self.env['property.home.type'].search([('id', '>', 0)])
         transaction_type_ids = self.env['property.transaction.type'].search([('id', '>', 0)])
-        home_types = ['F']
-        transaction_types = ['B']        
         # first_create property.way.evolution.price
         if home_type_ids:
             for home_type_id in home_type_ids:
@@ -152,7 +150,7 @@ class PropertyWayEvolutionPrice(models.Model):
                     for transaction_type_id in transaction_type_ids:
                         evolution_price_ids = self.env['property.way.evolution.price'].search(
                             [
-                                ('property_home_type_id', '=', property_home_type_id.id),
+                                ('property_home_type_id', '=', home_type_id.id),
                                 ('property_transaction_type_id', '=', transaction_type_id.id)
                             ]
                         )
@@ -180,7 +178,7 @@ class PropertyWayEvolutionPrice(models.Model):
                                     'property_transaction_type_id': transaction_type_id.id,
                                     'radius': 500,
                                     'source': 'bbva'
-                                }                
+                                }
                                 self.env['property.way.evolution.price'].sudo().create(vals)
         # now check all property.way.evolution.price
         evolution_price_ids = self.env['property.way.evolution.price'].search(
@@ -199,11 +197,11 @@ class PropertyWayEvolutionPrice(models.Model):
                     # action_check
                     return_item = evolution_price_id.action_check(tsec)[0]
                     if 'errors' in return_item:
-                        if return_item['errors'] == True:
+                        if return_item['errors']:
                             _logger.info(return_item)
                             # fix
                             if return_item['status_code'] != 403:
-                                _logger.info(paramos)
+                                break
                             else:
                                 _logger.info('Raro que sea un 403 pero pasamos')
                                 tsec = self.bbva_generate_tsec()

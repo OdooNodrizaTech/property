@@ -171,7 +171,7 @@ class PropertyProperty(models.Model):
                                                                                 'property_property_id': self.id,
                                                                                 'external_id': str(build_unit['id']),
                                                                                 'source': 'bbva'
-                                                                            }                                                                    
+                                                                            }
                                                                             # stair
                                                                             if 'stair' in build_unit:
                                                                                 vals['stair'] = str(build_unit['stair'])
@@ -188,7 +188,8 @@ class PropertyProperty(models.Model):
                                                                             if 'useCode' in build_unit:
                                                                                 if 'id' in build_unit['useCode']:
                                                                                     if str(build_unit['useCode']['id']) in use_id_external_id:
-                                                                                        vals['property_use_id'] = int(use_id_external_id[str(build_unit['useCode']['id'])])
+                                                                                        vals['property_use_id'] = \
+                                                                                            int(use_id_external_id[str(build_unit['useCode']['id'])])
                                                                             # create
                                                                             self.env['property.property.build.unit'].sudo().create(vals)
                                                                             # total_build_units
@@ -199,10 +200,10 @@ class PropertyProperty(models.Model):
             _logger.info(url)
         # update date_last_check + total_build_units
         self.date_last_check = current_date.strftime("%Y-%m-%d")
-        self.total_build_units = total_build_units            
+        self.total_build_units = total_build_units
         # return
         return return_item
-    
+
     @api.model
     def cron_check_properties(self):
         self.ensure_one()
@@ -251,7 +252,7 @@ class PropertyProperty(models.Model):
                             _logger.info(return_item)
                             # fix
                             if return_item['status_code'] != 403:
-                                _logger.info(paramos)
+                                break
                             else:
                                 _logger.info(
                                     _('Raro que sea un 403 pero pasamos')
@@ -270,10 +271,10 @@ class PropertyProperty(models.Model):
                     ))
                     # update
                     if return_item['status_code'] != 403:
-                        property_number_id.full = True  
+                        number_id.full = True
                     # Sleep 1 second to prevent error (if request)
                     time.sleep(1)
-                    
+
     @api.model
     def cron_check_properties_full_info(self):
         property_ids = self.env['property.property'].search(
@@ -306,11 +307,11 @@ class PropertyProperty(models.Model):
                         use_id_external_id
                     )[0]
                     if 'errors' in return_item:
-                        if return_item['errors'] == True:
+                        if return_item['errors']:
                             _logger.info(return_item)
                             # fix
                             if return_item['status_code'] != 403:
-                                _logger.info(paramos)
+                                break
                             else:
                                 _logger.info(
                                     _('Raro que sea un 403 pero pasamos')
@@ -321,7 +322,7 @@ class PropertyProperty(models.Model):
                     percent = (float(count)/float(len(property_ids)))*100
                     percent = "{0:.2f}".format(percent)
                     _logger.info('%s - %s%s (%s/%s)' % (
-                        property_property_id.external_id,
+                        property_id.external_id,
                         percent,
                         '%',
                         count,
@@ -329,6 +330,6 @@ class PropertyProperty(models.Model):
                     ))
                     # update
                     if return_item['status_code'] == 200:
-                        property_property_id.full = True  
+                        property_id.full = True
                     # Sleep 1 second to prevent error (if request)
                     time.sleep(1)

@@ -9,21 +9,21 @@ _logger = logging.getLogger(__name__)
 class PropertyWayType(models.Model):
     _name = 'property.way.type'
     _description = 'Property way Type'
-            
+
     external_id = fields.Char(
         string='External Id'
     )
     name = fields.Char(
         string='Name'
-    )            
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
         ],
         string='Source',
         default='bbva'
-    )            
-    
+    )
+
     @api.model
     def cron_check_way_types(self):
         # requests

@@ -1,6 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 import requests
 import json
 from datetime import datetime
@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PropertyNumber(models.Model):
     _name = 'property.number'
     _description = 'Property Number'
-    
+
     property_way_id = fields.Many2one(
         comodel_name='property.way',
         string='Property Way Id'
@@ -45,13 +45,13 @@ class PropertyNumber(models.Model):
     )
     garages_number = fields.Integer(
         string='Garages Number'
-    )        
+    )
     full = fields.Boolean(
         string='Full'
     )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )    
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
@@ -61,8 +61,8 @@ class PropertyNumber(models.Model):
     )
     total_properties = fields.Integer(
         string='Total Properties'
-    )        
-        
+    )
+
     @api.multi
     def action_get_properties(self,
                               tsec,
@@ -111,7 +111,7 @@ class PropertyNumber(models.Model):
         headers = {
             'tsec': str(tsec)
         }
-        response = requests.get(url, headers=headers)            
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             response_json = json.loads(response.text)
             if 'provinces' in response_json:
@@ -142,7 +142,7 @@ class PropertyNumber(models.Model):
                                                         self.companies_number = number['companiesNumber']
                                                     # officeNumbers
                                                     if 'officeNumbers' in number:
-                                                        self.office_numbers = number['officeNumbers']                                                                         
+                                                        self.office_numbers = number['officeNumbers']
                                                     # commercialsNumber
                                                     if 'commercialsNumber' in number:
                                                         self.commercials_number = number['commercialsNumber']
@@ -161,7 +161,7 @@ class PropertyNumber(models.Model):
                                                             if len(property_ids) == 0:
                                                                 # creamos
                                                                 vals = {
-                                                                    'property_number_id': self.id,                                                    
+                                                                    'property_number_id': self.id,
                                                                     'external_id': str(property['id']),
                                                                     'source': 'bbva',
                                                                     'total_build_units': 0
@@ -198,7 +198,7 @@ class PropertyNumber(models.Model):
                                                                             property_use_vals = {
                                                                                 'external_id': str(property['useCode']['id']),
                                                                                 'name': str(property['useCode']['name'].encode('utf-8')),
-                                                                            } 
+                                                                            }
                                                                             use_obj = self.env['property.use'].sudo().create(property_use_vals)
                                                                             # add_array
                                                                             use_id_external_id[str(property_use_vals['external_id'])] = use_obj.id
@@ -213,13 +213,18 @@ class PropertyNumber(models.Model):
                                                                             property_building_type_vals = {
                                                                                 'external_id': str(property['buildingType']['id']),
                                                                                 'name': str(property['buildingType']['name'].encode('utf-8')),
-                                                                            } 
-                                                                            building_type_obj = self.env['property.building.type'].sudo().create(property_building_type_vals)
+                                                                            }
+                                                                            building_type_obj = self.env['property.building.type'].sudo().create(
+                                                                                property_building_type_vals
+                                                                            )
                                                                             # add_array
-                                                                            building_type_id_external_id[str(property_building_type_vals['external_id'])] = building_type_obj.id
+                                                                            building_type_id_external_id[
+                                                                                str(property_building_type_vals['external_id'])
+                                                                            ] = building_type_obj.id
                                                                         # check_if_exists and add
                                                                         if str(property['buildingType']['id']) in building_type_id_external_id:
-                                                                            vals['property_building_type_id'] = building_type_id_external_id[str(property['buildingType']['id'])]
+                                                                            vals['property_building_type_id'] = \
+                                                                                building_type_id_external_id[str(property['buildingType']['id'])]
                                                                 # create
                                                                 self.env['property.property'].sudo().create(vals)
                                                             # total_properties
@@ -232,8 +237,8 @@ class PropertyNumber(models.Model):
         self.date_last_check = current_date.strftime("%Y-%m-%d")
         self.total_properties = total_properties
         # return
-        return return_item     
-    
+        return return_item
+
     @api.models
     def cron_check_numbers(self):
         way_ids = self.env['property.way'].search(
@@ -252,7 +257,7 @@ class PropertyNumber(models.Model):
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
-                            _logger.info(paramos)
+                            break
                         else:
                             _logger.info(
                                 _('Raro que sea un 403 pero pasamos')

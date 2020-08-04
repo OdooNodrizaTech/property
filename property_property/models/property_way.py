@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PropertyWay(models.Model):
     _name = 'property.way'
     _description = 'Property way'
-        
+
     property_town_id = fields.Many2one(
         comodel_name='property.town',
         string='Property Town Id'
@@ -25,7 +25,7 @@ class PropertyWay(models.Model):
     property_way_type_id = fields.Many2one(
         comodel_name='property.way.type',
         string='Property Way Type Id'
-    )    
+    )
     postal_code = fields.Char(
         string='Postal Code'
     )
@@ -40,7 +40,7 @@ class PropertyWay(models.Model):
     )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )        
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
@@ -51,7 +51,7 @@ class PropertyWay(models.Model):
     total_numbers = fields.Integer(
         string='Total Numbers'
     )
-    
+
     @api.multi
     def action_update_way(self):
         self.ensure_one()
@@ -78,10 +78,10 @@ class PropertyWay(models.Model):
             )
             payload = {
                 '$filter': '(name=='+str(way_id.name.encode('utf-8'))+')'
-            }                         
+            }
             response = requests.get(url, params=payload)
             if response.status_code == 200:
-                response_json = json.loads(response.text)                        
+                response_json = json.loads(response.text)
                 if 'provinces' in response_json:
                     for province in response_json['provinces']:
                         if 'municipalities' in province:
@@ -95,17 +95,17 @@ class PropertyWay(models.Model):
                                                     location_value = way['location']['value'].replace(',', '.').split(';')
                                                     self.latitude = str(location_value[1])
                                                     # longitude
-                                                    self.longitude = str(location_value[0].replace('-.', '-0.'))                     
+                                                    self.longitude = str(location_value[0].replace('-.', '-0.'))
                 # Sleep 1 second to prevent error (if request)
                 time.sleep(1)
             else:
                 _logger.info('status_code')
-                _logger.info(response.status_code)                                            
+                _logger.info(response.status_code)
         # update date_last_check
         self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
         return return_item
-    
+
     @api.multi
     def action_get_numbers(self):
         self.ensure_one()
@@ -123,7 +123,7 @@ class PropertyWay(models.Model):
             self.property_town_id.property_municipality_id.external_id,
             self.external_id
         )
-        response = requests.get(url)                                             
+        response = requests.get(url)
         if response.status_code == 200:
             response_json = json.loads(response.text)
             # operations
@@ -148,7 +148,7 @@ class PropertyWay(models.Model):
                                                             if len(number_ids) == 0:
                                                                 # creamos
                                                                 vals = {
-                                                                    'property_way_id': self.id,                                                    
+                                                                    'property_way_id': self.id,
                                                                     'external_id': str(number['id']),
                                                                     'source': 'bbva'
                                                                 }
@@ -162,13 +162,13 @@ class PropertyWay(models.Model):
         else:
             _logger.info('status_code')
             _logger.info(response.status_code)
-            _logger.info(url)        
+            _logger.info(url)
         # update date_last_check + total_numbers
         self.date_last_check = current_date.strftime("%Y-%m-%d")
-        self.total_numbers = total_numbers                                                                
+        self.total_numbers = total_numbers
         # return
-        return return_item        
-    
+        return return_item
+
     @api.model
     def cron_check_ways(self):
         municipality_ids = self.env['property.municipality'].search(
@@ -187,7 +187,7 @@ class PropertyWay(models.Model):
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
-                            _logger.info(paramos)
+                            break
                         else:
                             _logger.info(
                                 _('Raro que sea un 403 pero pasamos')
@@ -203,8 +203,8 @@ class PropertyWay(models.Model):
                     len(municipality_ids)
                 ))
                 # update
-                property_municipality_id.full_ways = True
-                
+                municipality_id.full_ways = True
+
     @api.model
     def cron_update_ways(self):
         way_ids = self.env['property.way'].search(
@@ -223,7 +223,7 @@ class PropertyWay(models.Model):
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
-                            _logger.info(paramos)
+                            break
                         else:
                             _logger.info(
                                 _('Raro que sea un 403 pero pasamos')

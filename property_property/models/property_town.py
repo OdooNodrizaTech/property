@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 class PropertyWay(models.Model):
     _name = 'property.town'
     _description = 'Property town'
-    
+
     property_municipality_id = fields.Many2one(
         comodel_name='property.municipality',
         string='Property Municipality Id'
@@ -45,7 +45,7 @@ class PropertyWay(models.Model):
                         _logger.info(return_item)
                         # fix
                         if return_item['status_code'] != 403:
-                            _logger.info(paramos)
+                            break
                         else:
                             _logger.info(
                                 _('Raro que sea un 403 pero pasamos')
