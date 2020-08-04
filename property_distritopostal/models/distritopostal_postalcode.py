@@ -70,7 +70,7 @@ class DistritopostalPostalcode(models.Model):
                             _('PARECE que las 2 tablas ultimas son las calles, procedemos')
                         )
                         # operations
-                        table_ids_check = [1 ,2]
+                        table_ids_check = [1, 2]
                         # change_full
                         change_full = True
                     else:

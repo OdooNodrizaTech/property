@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PropertyProperty(models.Model):
     _name = 'property.property'
     _description = 'Property Property'
-    
+
     property_number_id = fields.Many2one(
         comodel_name='property.number',
         string='Property Number Id'
@@ -59,13 +59,13 @@ class PropertyProperty(models.Model):
     )
     door = fields.Char(
         string='Door'
-    )            
+    )
     full = fields.Boolean(
         string='Full'
     )
     date_last_check = fields.Date(
         string='Date Last Check'
-    )    
+    )
     source = fields.Selection(
         selection=[
             ('bbva', 'BBVA')
@@ -75,9 +75,9 @@ class PropertyProperty(models.Model):
     )
     total_build_units = fields.Integer(
         string='Total Build Units'
-    )        
-    
-    @api.multi    
+    )
+
+    @api.multi
     def bbva_generate_tsec(self):
         self.ensure_one()
         tsec = False
@@ -93,12 +93,12 @@ class PropertyProperty(models.Model):
         }
         response = requests.post(url, headers=headers, data=data_obj)
         if response.status_code == 200:
-            response_json = json.loads(response.text)        
+            response_json = json.loads(response.text)
             if 'access_token' in response_json:
                 tsec = str(response_json['access_token'])
-            
-        return tsec            
-        
+
+        return tsec
+
     @api.multi
     def action_get_full_info(self, tsec, use_id_external_id=False):
         self.ensure_one()
@@ -131,7 +131,7 @@ class PropertyProperty(models.Model):
             self.external_id
         )
         headers = {'tsec': str(tsec)}
-        response = requests.get(url, headers=headers)        
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             response_json = json.loads(response.text)
             if 'provinces' in response_json:
@@ -145,7 +145,7 @@ class PropertyProperty(models.Model):
                                             if 'numbers' in way:
                                                 for number in way['numbers']:
                                                     if 'properties' in number:
-                                                        for property in number['properties']:                                                            
+                                                        for property in number['properties']:
                                                             # stair
                                                             if 'stair' in property:
                                                                 self.stair = str(property['stair'])
