@@ -1,3 +1,4 @@
+[![Build Status](https://runbot.nodrizatech.com/runbot/badge/34/12.0.svg)](https://runbot.nodrizatech.com/runbot/repo/https-github-com-odoonodrizatech-property-34)
 [![Build Status](https://travis-ci.org/OdooNodrizaTech/property.svg?branch=12.0)](https://travis-ci.org/OdooNodrizaTech/property)
 [![codecov](https://codecov.io/gh/OdooNodrizaTech/property/branch/12.0/graph/badge.svg)](https://codecov.io/gh/OdooNodrizaTech/property)
 
