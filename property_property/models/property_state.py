@@ -22,7 +22,7 @@ class PropertyState(models.Model):
         string='Latitude'
     )
     longitude = fields.Float(
-        string='Latitude'
+        string='Longitude'
     )
     full = fields.Boolean(
         string='Full'
