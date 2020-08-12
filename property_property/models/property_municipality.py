@@ -26,7 +26,7 @@ class PropertyMunicipality(models.Model):
         string='Latitude'
     )
     longitude = fields.Char(
-        string='Latitude'
+        string='Longitude'
     )
     full = fields.Boolean(
         string='Full'

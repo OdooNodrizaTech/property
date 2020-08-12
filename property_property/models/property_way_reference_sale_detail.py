@@ -30,7 +30,7 @@ class PropertyWayReferenceSaleDetail(models.Model):
         string='Latitude'
     )
     longitude = fields.Char(
-        string='Latitude'
+        string='Longitude'
     )
     url_image = fields.Char(
         string='Url Image'
