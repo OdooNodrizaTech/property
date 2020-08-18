@@ -81,7 +81,7 @@ class SedecatastroNumero(models.Model):
                 consulta_dnp = inmuebles['consulta_dnp']
                 # total_inmuebles
                 if 'control' in consulta_dnp:
-                    control = consulta_dnp ['control']
+                    control = consulta_dnp['control']
                     self.total_inmuebles = int(control['cudnp'])
                 # inmueble y toda la info
                 if 'bico' in consulta_dnp:
