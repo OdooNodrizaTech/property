@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaVia
+# https://ovc.catastro.meh.es/
+# /ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaVia
 import logging
 from odoo import api, fields, models, _
 import requests
@@ -58,6 +59,9 @@ class SedecatastroVia(models.Model):
     def action_get_numeros_sedecatastro(self):
         self.ensure_one()
         current_date = datetime.now(pytz.timezone('Europe/Madrid'))
+        model_s_n = 'sedecatastro.numero'
+        key_s_p_id = 'sedecatastro_provincia_id'
+        key_s_m_id = 'sedecatastro_municipio_id'
         # return
         return_item = {
             'errors': False,
@@ -71,7 +75,10 @@ class SedecatastroVia(models.Model):
         # while
         while continue_check_numbers:
             # pruebas_get
-            url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/ConsultaNumero'
+            url = 'http://%s/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/%s' % (
+                'ovc.catastro.meh.es',
+                'ConsultaNumero'
+            )
             params_url = {
                 'Provincia': str(self.sedecatastro_provincia_id.np),
                 'Municipio': str(self.sedecatastro_municipio_id.nm.encode('utf-8')),
@@ -89,18 +96,24 @@ class SedecatastroVia(models.Model):
                     numero_has_changed = False
                     # consulta_numerero
                     if 'consulta_numerero' in numeros:
+                        consulta_numerero = numeros['consulta_numerero']
                         # total
-                        if 'control' in numeros['consulta_numerero']:
-                            if 'cunum' in numeros['consulta_numerero']['control']:
+                        if 'control' in consulta_numerero:
+                            control = consulta_numerero['control']
+                            if 'cunum' in control:
+                                cunum = control['cunum']
                                 # Fix 1
-                                if numeros['consulta_numerero']['control']['cunum'] == "1":
-                                    numeros['consulta_numerero']['numerero']['nump'] = [numeros['consulta_numerero']['numerero']['nump']]
+                                if cunum == "1":
+                                    numerero = consulta_numerero['numerero']
+                                    numerero['nump'] = [numerero['nump']]
                                     continue_check_numbers = False
                         # items
-                        if 'numerero' in numeros['consulta_numerero']:
-                            if 'nump' in numeros['consulta_numerero']['numerero']:
+                        if 'numerero' in consulta_numerero:
+                            numerero = consulta_numerero['numerero']
+                            if 'nump' in numerero:
+                                nump = numerero['nump']
                                 # for
-                                for nump_item in numeros['consulta_numerero']['numerero']['nump']:
+                                for nump_item in nump:
                                     numero_item = int(nump_item['num']['pnp'])
                                     if numero_item > numero:
                                         numero = numero_item
@@ -108,9 +121,9 @@ class SedecatastroVia(models.Model):
                                     # params
                                     finca_item = str(nump_item['pc']['pc1'])
                                     hoja_plano_item = str(nump_item['pc']['pc2'])
-                                    numero_ids = self.env['sedecatastro.numero'].search(
+                                    numero_ids = self.env[model_s_n].search(
                                         [
-                                            ('sedecatastro_municipio_id', '=', self.id),
+                                            (key_s_m_id, '=', self.id),
                                             ('numero', '=', str(numero_item)),
                                             ('finca', '=', str(finca_item)),
                                             ('hoja_plano', '=', str(hoja_plano_item))
@@ -118,14 +131,16 @@ class SedecatastroVia(models.Model):
                                     )
                                     if len(numero_ids) == 0:
                                         vals = {
-                                            'sedecatastro_provincia_id': self.sedecatastro_provincia_id.id,
-                                            'sedecatastro_municipio_id': self.sedecatastro_municipio_id.id,
+                                            key_s_p_id:
+                                                self.sedecatastro_provincia_id.id,
+                                            key_s_m_id:
+                                                self.sedecatastro_municipio_id.id,
                                             'sedecatastro_via_id': self.id,
                                             'numero': numero_item,
                                             'finca': finca_item,
                                             'hoja_plano': hoja_plano_item,
                                         }
-                                        self.env['sedecatastro.numero'].sudo().create(vals)
+                                        self.env[model_s_n].sudo().create(vals)
                     else:
                         return {
                             'errors': True,

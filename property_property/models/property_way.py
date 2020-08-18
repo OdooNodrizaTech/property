@@ -56,6 +56,7 @@ class PropertyWay(models.Model):
     def action_update_way(self):
         self.ensure_one()
         current_date = datetime.now()
+        p_m_id = self.property_town_id.property_municipality_id
         # return
         return_item = {
             'errors': False,
@@ -71,9 +72,10 @@ class PropertyWay(models.Model):
         if way_ids:
             way_id = way_ids[0]
             # request
-            url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/%s/towns/%s/ways' % (
-                self.property_town_id.property_municipality_id.property_state_id.external_id,
-                self.property_town_id.property_municipality_id.external_id,
+            url = '%s/provinces/%s/municipalities/%s/towns/%s/ways' % (
+                'https://www.bbva.es/ASO/streetMap/V02',
+                p_m_id.property_state_id.external_id,
+                p_m_id.external_id,
                 self.property_town_id.external_id
             )
             payload = {
@@ -83,19 +85,31 @@ class PropertyWay(models.Model):
             if response.status_code == 200:
                 response_json = json.loads(response.text)
                 if 'provinces' in response_json:
-                    for province in response_json['provinces']:
-                        if 'municipalities' in province:
-                            for municipality in province['municipalities']:
-                                if 'towns' in municipality:
-                                    for town in municipality['towns']:
-                                        if 'ways' in town:
-                                            for way in town['ways']:
-                                                # latitude-longitude
-                                                if 'location' in way:
-                                                    location_value = way['location']['value'].replace(',', '.').split(';')
-                                                    self.latitude = str(location_value[1])
-                                                    # longitude
-                                                    self.longitude = str(location_value[0].replace('-.', '-0.'))
+                    provinces = response_json['provinces']
+                    for province in provinces:
+                        if 'municipalities' not in province:
+                            continue
+
+                        municipalities = province['municipalities']
+                        for municipality in municipalities:
+                            if 'towns' not in municipality:
+                                continue
+
+                            for town in municipality['towns']:
+                                if 'ways' not in town:
+                                    continue
+
+                                for way in town['ways']:
+                                    # latitude-longitude
+                                    if 'location' not in way:
+                                        continue
+
+                                    l_value = way['location']['value']
+                                    l_value = l_value.replace(',', '.').split(';')
+                                    self.latitude = str(l_value[1])
+                                    # longitude
+                                    l0 = l_value[0]
+                                    self.longitude = str(l0.replace('-.', '-0.'))
                 # Sleep 1 second to prevent error (if request)
                 time.sleep(1)
             else:
@@ -110,6 +124,10 @@ class PropertyWay(models.Model):
     def action_get_numbers(self):
         self.ensure_one()
         current_date = datetime.now()
+        model_p_n = 'property.number'
+        p_m_id = self.property_town_id.property_municipality_id
+        key_p_w_id = 'property_way_id'
+        key_e_id = 'external_id'
         # return
         return_item = {
             'errors': False,
@@ -118,9 +136,10 @@ class PropertyWay(models.Model):
         }
         # requests
         total_numbers = 0
-        url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/%s/ways/%s/numbers' % (
-            self.property_town_id.property_municipality_id.property_state_id.external_id,
-            self.property_town_id.property_municipality_id.external_id,
+        url = '%s/provinces/%s/municipalities/%s/ways/%s/numbers' % (
+            'https://www.bbva.es/ASO/streetMap/V02',
+            p_m_id.property_state_id.external_id,
+            p_m_id.external_id,
             self.external_id
         )
         response = requests.get(url)
@@ -129,36 +148,46 @@ class PropertyWay(models.Model):
             # operations
             if 'provinces' in response_json:
                 for province in response_json['provinces']:
-                    if province['id'] == self.property_town_id.property_municipality_id.property_state_id.external_id:
-                        if 'municipalities' in province:
-                            for municipality in province['municipalities']:
-                                if 'towns' in municipality:
-                                    for town in municipality['towns']:
-                                        if 'ways' in town:
-                                            for way in town['ways']:
-                                                if str(way['id']) == self.external_id:
-                                                    if 'numbers' in way:
-                                                        for number in way['numbers']:
-                                                            number_ids = self.env['property.number'].search(
-                                                                [
-                                                                    ('property_way_id', '=', self.id),
-                                                                    ('external_id', '=', str(number['id']))
-                                                                ]
-                                                            )
-                                                            if len(number_ids) == 0:
-                                                                # creamos
-                                                                vals = {
-                                                                    'property_way_id': self.id,
-                                                                    'external_id': str(number['id']),
-                                                                    'source': 'bbva'
-                                                                }
-                                                                # latitude-longitude
-                                                                if 'name' in number:
-                                                                    vals['name'] = str(number['name'].encode('utf-8'))
-                                                                # create
-                                                                self.env['property.number'].sudo().create(vals)
-                                                                # total_numbers
-                                                                total_numbers += 1
+                    if province['id'] == p_m_id.property_state_id.external_id:
+                        if 'municipalities' not in province:
+                            continue
+
+                        for municipality in province['municipalities']:
+                            if 'towns' not in municipality:
+                                continue
+
+                            for town in municipality['towns']:
+                                if 'ways' not in town:
+                                    continue
+
+                                for way in town['ways']:
+                                    if str(way['id']) == self.external_id:
+                                        if 'numbers' not in way:
+                                            continue
+
+                                        for number in way['numbers']:
+                                            number_ids = self.env[
+                                                model_p_n
+                                            ].search(
+                                                [
+                                                    (key_p_w_id, '=', self.id),
+                                                    (key_e_id, '=', number['id'])
+                                                ]
+                                            )
+                                            if len(number_ids) == 0:
+                                                # creamos
+                                                vals = {
+                                                    key_p_w_id: self.id,
+                                                    key_e_id: str(number['id']),
+                                                    'source': 'bbva'
+                                                }
+                                                # latitude-longitude
+                                                if 'name' in number:
+                                                    vals['name'] = number['name']
+                                                # create
+                                                self.env[model_p_n].sudo().create(vals)
+                                                # total_numbers
+                                                total_numbers += 1
         else:
             _logger.info('status_code')
             _logger.info(response.status_code)

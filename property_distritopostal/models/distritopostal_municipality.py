@@ -31,6 +31,8 @@ class DistritopostalMunicipality(models.Model):
     @api.multi
     def action_get_ways(self):
         self.ensure_one()
+        model_d_p = 'distritopostal.postalcode'
+        model_d_w = 'distritopostal.way'
         url = 'http://distritopostal.es%s' % self.url
         response = requests.get(url)
         if response.status_code == 200:
@@ -57,23 +59,27 @@ class DistritopostalMunicipality(models.Model):
                                 h2_item_a_0_title = h2_item_a_0.get('title')
                                 string_search = 'postales de la provincia de'
                                 if string_search not in h2_item_a_0_title:
-                                    h2_item_a_0_href = str(h2_item_a_0.get('href'))
+                                    h2_href = str(h2_item_a_0.get('href'))
                                     # search
-                                    postalcode_ids = self.env['distritopostal.postalcode'].search(
+                                    postalcode_ids = self.env[model_d_p].search(
                                         [
-                                            ('distritopostal_municipality_id', '=', self.id),
-                                            ('url', '=', h2_item_a_0_href)
+                                            (
+                                                'distritopostal_municipality_id',
+                                                '=',
+                                                self.id
+                                            ),
+                                            ('url', '=', h2_href)
                                         ]
                                     )
                                     if len(postalcode_ids) == 0:
                                         # vals
                                         vals = {
                                             'distritopostal_municipality_id': self.id,
-                                            'name': str(h2_item_a_0_href.replace('/', '')),
-                                            'url': str(h2_item_a_0_href),
+                                            'name': str(h2_href.replace('/', '')),
+                                            'url': str(h2_href),
                                         }
                                         # create
-                                        self.env['distritopostal.postalcode'].sudo().create(vals)
+                                        self.env[model_d_p].sudo().create(vals)
                 # update
                 self.full = True
             else:
@@ -91,23 +97,29 @@ class DistritopostalMunicipality(models.Model):
                                 for table_item_tr in table_item_trs:
                                     table_item_tr_tds = table_item_tr.findAll('td')
                                     if len(table_item_tr_tds) > 0:
+                                        td_0 = table_item_tr_tds[0]
                                         # calle_nombre
-                                        calle_nombre = str(table_item_tr_tds[0].text.encode('utf-8'))
+                                        calle_nombre = str(td_0.text.encode('utf-8'))
                                         # search
-                                        way_ids = self.env['distritopostal.way'].search(
+                                        way_ids = self.env[model_d_w].search(
                                             [
-                                                ('distritopostal_municipality_id', '=', self.id),
+                                                (
+                                                    'distritopostal_municipality_id',
+                                                    '=',
+                                                    self.id
+                                                ),
                                                 ('name', '=', calle_nombre)
                                             ]
                                         )
                                         if len(way_ids) == 0:
                                             # vals
                                             vals = {
-                                                'distritopostal_municipality_id': self.id,
+                                                'distritopostal_municipality_id':
+                                                    self.id,
                                                 'name': str(calle_nombre)
                                             }
                                             # create
-                                            self.env['distritopostal.way'].sudo().create(vals)
+                                            self.env[model_d_w].sudo().create(vals)
                 # update
                 self.full = True
 

@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaMunicipio
+# https://ovc.catastro.meh.es/
+# /ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=ConsultaMunicipio
 import logging
 from odoo import api, fields, models, _
 import requests
@@ -20,7 +21,7 @@ class SedecatastroMunicipio(models.Model):
     )
     nm = fields.Char(
         string='Nm',
-        help='DENOMINACION DEL MUNICIPIO SEGUN M. DE HACIENDA Y ADMINISTRACIONES PUBLICAS'
+        help='DENOMINACION DEL MUNICIPIO SEGUN M. DE HACIENDA Y ADMINI PUBLICAS'
     )
     locat_cd = fields.Integer(
         string='Locat Cd',
@@ -53,6 +54,8 @@ class SedecatastroMunicipio(models.Model):
     def action_get_vias_sedecatastro(self):
         self.ensure_one()
         current_date = datetime.now()
+        key_s_p_id = 'sedecatastro_provincia_id'
+        key_s_m_id = 'sedecatastro_municipio_id'
         # return
         return_item = {
             'errors': False,
@@ -60,7 +63,10 @@ class SedecatastroMunicipio(models.Model):
             'error': ''
         }
         # request
-        url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/ConsultaVia'
+        url = 'http://%s/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/%s' % (
+            'ovc.catastro.meh.es',
+            'ConsultaVia'
+        )
         data_obj = {
             'Provincia': self.sedecatastro_provincia_id.np,
             'Municipio': self.nm,
@@ -72,20 +78,28 @@ class SedecatastroMunicipio(models.Model):
             xmltodict_response = xmltodict.parse(response.text)
             vias = json.loads(json.dumps(xmltodict_response))
             if 'consulta_callejero' in vias:
-                if 'callejero' in vias['consulta_callejero']:
-                    if 'calle' in vias['consulta_callejero']['callejero']:
+                consulta_callejero = vias['consulta_callejero']
+                if 'callejero' in consulta_callejero:
+                    callejero = consulta_callejero['callejero']
+                    if 'calle' in callejero:
+                        calle = callejero['calle']
                         # total_vias
-                        if 'control' in vias['consulta_callejero']:
-                            if 'cuca' in vias['consulta_callejero']['control']:
-                                self.total_vias = vias['consulta_callejero']['control']['cuca']
+                        if 'control' in consulta_callejero:
+                            control = consulta_callejero['control']
+                            if 'cuca' in control:
+                                self.total_vias = control['cuca']
                                 # Fix 1
-                                if vias['consulta_callejero']['control']['cuca'] == "1":
-                                    vias['consulta_callejero']['callejero']['calle'] = [vias['consulta_callejero']['callejero']['calle']]
+                                if control['cuca'] == "1":
+                                    calle = [calle]
                         # for
-                        for calle_item in vias['consulta_callejero']['callejero']['calle']:
+                        for calle_item in calle:
                             sedecatastro_via_ids = self.env['sedecatastro.via'].search(
                                 [
-                                    ('sedecatastro_provincia_id', '=', self.sedecatastro_provincia_id.id),
+                                    (
+                                        key_s_p_id,
+                                        '=',
+                                        self.sedecatastro_provincia_id.id
+                                    ),
                                     ('dir_cv', '=', str(calle_item['dir']['cv']))
                                 ]
                             )
@@ -94,14 +108,16 @@ class SedecatastroMunicipio(models.Model):
                                 if type(calle_item['dir']['tv']) is dict:
                                     calle_item['dir']['tv'] = ''
                                 # creamos
+                                loine = calle_item['loine']
+                                dir = calle_item['dir']
                                 vals = {
-                                    'sedecatastro_provincia_id': self.sedecatastro_provincia_id.id,
-                                    'sedecatastro_municipio_id': self.id,
-                                    'loine_cp': str(calle_item['loine']['cp']),
-                                    'loine_cm': str(calle_item['loine']['cm']),
-                                    'dir_cv': str(calle_item['dir']['cv']),
-                                    'dir_tv': str(calle_item['dir']['tv'].encode('utf-8')),
-                                    'dir_nv': str(calle_item['dir']['nv'].encode('utf-8')),
+                                    key_s_p_id: self.sedecatastro_provincia_id.id,
+                                    key_s_m_id: self.id,
+                                    'loine_cp': str(loine['cp']),
+                                    'loine_cm': str(loine['cm']),
+                                    'dir_cv': str(dir['cv']),
+                                    'dir_tv': str(dir['tv'].encode('utf-8')),
+                                    'dir_nv': str(dir['nv'].encode('utf-8')),
                                 }
                                 self.env['sedecatastro.via'].sudo().create(vals)
                         # update date_last_check

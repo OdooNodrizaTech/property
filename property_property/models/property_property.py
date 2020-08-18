@@ -82,11 +82,10 @@ class PropertyProperty(models.Model):
         self.ensure_one()
         tsec = False
         url = 'https://www.bbva.es/ASO/TechArchitecture/grantingTicketsOauth/V01/'
+        key = self.env['ir.config_parameter'].sudo().get_param('bbva_authorization_key')
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic %s' % self.env['ir.config_parameter'].sudo().get_param(
-                'bbva_authorization_key'
-            )
+            'Authorization': 'Basic %s' % key
         }
         data_obj = {
             'grant_type': 'client_credentials'
@@ -103,6 +102,8 @@ class PropertyProperty(models.Model):
     def action_get_full_info(self, tsec, use_id_external_id=False):
         self.ensure_one()
         current_date = datetime.now()
+        p_town_id = self.property_number_id.property_way_id.property_town_id
+        model_p_o_b_u = 'property.property.build.unit'
         # return
         return_item = {
             'errors': False,
@@ -122,10 +123,11 @@ class PropertyProperty(models.Model):
                     use_id_external_id[str(use_id.external_id)] = use_id.id
         # requests
         total_build_units = 0
-        url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/%s/towns/%s/ways/%s/numbers/%s/properties/%s' % (
-            self.property_number_id.property_way_id.property_town_id.property_municipality_id.property_state_id.external_id,
-            self.property_number_id.property_way_id.property_town_id.property_municipality_id.external_id,
-            self.property_number_id.property_way_id.property_town_id.external_id,
+        url = '%s%s/municipalities/%s/towns/%s/ways/%s/numbers/%s/properties/%s' % (
+            'https://www.bbva.es/ASO/streetMap/V02/provinces',
+            p_town_id.property_municipality_id.property_state_id.external_id,
+            p_town_id.property_municipality_id.external_id,
+            p_town_id.external_id,
             self.property_number_id.property_way_id.external_id,
             self.property_number_id.external_id,
             self.external_id
@@ -134,66 +136,82 @@ class PropertyProperty(models.Model):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             response_json = json.loads(response.text)
-            if 'provinces' in response_json:
-                for province in response_json['provinces']:
-                    if 'municipalities' in province:
-                        for municipality in province['municipalities']:
-                            if 'towns' in municipality:
-                                for town in municipality['towns']:
-                                    if 'ways' in town:
-                                        for way in town['ways']:
-                                            if 'numbers' in way:
-                                                for number in way['numbers']:
-                                                    if 'properties' in number:
-                                                        for property in number['properties']:
-                                                            # stair
-                                                            if 'stair' in property:
-                                                                self.stair = str(property['stair'])
-                                                            # floor
-                                                            if 'floor' in property:
-                                                                self.floor = str(property['floor'])
-                                                            # door
-                                                            if 'door' in property:
-                                                                self.door = str(property['door'])
-                                                            # buildUnits
-                                                            if 'buildUnits' in property:
-                                                                for build_unit in property['buildUnits']:
-                                                                    if 'id' in build_unit:
-                                                                        build_unit_ids = self.env['property.property.build.unit'].search(
-                                                                            [
-                                                                                ('property_property_id', '=', self.id),
-                                                                                ('external_id', '=', str(build_unit['id']))
-                                                                            ]
-                                                                        )
-                                                                        if build_unit_ids:
-                                                                            # vals
-                                                                            vals = {
-                                                                                'property_property_id': self.id,
-                                                                                'external_id': str(build_unit['id']),
-                                                                                'source': 'bbva'
-                                                                            }
-                                                                            # stair
-                                                                            if 'stair' in build_unit:
-                                                                                vals['stair'] = str(build_unit['stair'])
-                                                                            # floor
-                                                                            if 'floor'in build_unit:
-                                                                                vals['floor'] = str(build_unit['floor'])
-                                                                            # door
-                                                                            if 'door' in build_unit:
-                                                                                vals['door'] = str(build_unit['door'])
-                                                                            # builtSurfaceArea
-                                                                            if 'builtSurfaceArea' in build_unit:
-                                                                                vals['built_surface_area'] = int(build_unit['builtSurfaceArea'])
-                                                                            # useCode
-                                                                            if 'useCode' in build_unit:
-                                                                                if 'id' in build_unit['useCode']:
-                                                                                    if str(build_unit['useCode']['id']) in use_id_external_id:
-                                                                                        vals['property_use_id'] = \
-                                                                                            int(use_id_external_id[str(build_unit['useCode']['id'])])
-                                                                            # create
-                                                                            self.env['property.property.build.unit'].sudo().create(vals)
-                                                                            # total_build_units
-                                                                            total_build_units += 1
+            for province in response_json['provinces']:
+                if 'municipalities' not in province:
+                    continue
+
+                for municipality in province['municipalities']:
+                    if 'towns' not in municipality:
+                        continue
+
+                    for town in municipality['towns']:
+                        if 'ways' not in town:
+                            continue
+
+                        for way in town['ways']:
+                            if 'numbers' not in way:
+                                continue
+
+                            for number in way['numbers']:
+                                if 'properties' not in number:
+                                    continue
+
+                                for property in number['properties']:
+                                    # stair
+                                    if 'stair' in property:
+                                        self.stair = str(property['stair'])
+                                    # floor
+                                    if 'floor' in property:
+                                        self.floor = str(property['floor'])
+                                    # door
+                                    if 'door' in property:
+                                        self.door = str(property['door'])
+                                    # buildUnits
+                                    if 'buildUnits' not in property:
+                                        continue
+
+                                    for bu in property['buildUnits']:
+                                        if 'id' not in bu:
+                                            continue
+
+                                        build_unit_ids = self.env[model_p_o_b_u].search(
+                                            [
+                                                ('property_property_id', '=', self.id),
+                                                ('external_id', '=', str(bu['id']))
+                                            ]
+                                        )
+                                        if build_unit_ids:
+                                            # vals
+                                            vals = {
+                                                'property_property_id': self.id,
+                                                'external_id': str(bu['id']),
+                                                'source': 'bbva'
+                                            }
+                                            # stair
+                                            if 'stair' in bu:
+                                                vals['stair'] = str(bu['stair'])
+                                            # floor
+                                            if 'floor'in build_unit:
+                                                vals['floor'] = str(bu['floor'])
+                                            # door
+                                            if 'door' in build_unit:
+                                                vals['door'] = str(bu['door'])
+                                            # builtSurfaceArea
+                                            if 'builtSurfaceArea' in bu:
+                                                vals[
+                                                    'built_surface_area'
+                                                ] = int(bu['builtSurfaceArea'])
+                                            # useCode
+                                            if 'useCode' in bu:
+                                                if 'id' in bu['useCode']:
+                                                    uC_id = str(bu['useCode'])
+                                                    if uC_id in use_id_external_id:
+                                                        val = use_id_external_id[uC_id]
+                                                        vals['property_use_id'] = val
+                                            # create
+                                            self.env[model_p_o_b_u].sudo().create(vals)
+                                            # total_build_units
+                                            total_build_units += 1
         else:
             _logger.info('status_code')
             _logger.info(response.status_code)
@@ -229,15 +247,15 @@ class PropertyProperty(models.Model):
                     for use_id in use_ids:
                         use_id_external_id[str(use_id.external_id)] = use_id.id
                 # building_type_id_external_id (optimize multi-query)
-                building_type_id_external_id = {}
+                type_id_external_id = {}
                 building_type_ids = self.env['property.building.type'].search(
                     [
                         ('id', '>', 0)
                     ]
                 )
                 if building_type_ids:
-                    for building_type_id in building_type_ids:
-                        building_type_id_external_id[str(building_type_id.external_id)] = building_type_id.id
+                    for type_id in building_type_ids:
+                        type_id_external_id[str(type_id.external_id)] = type_id.id
                 # for
                 for number_id in number_ids:
                     count += 1
@@ -245,7 +263,7 @@ class PropertyProperty(models.Model):
                     return_item = number_id.action_get_properties(
                         tsec,
                         use_id_external_id,
-                        building_type_id_external_id
+                        type_id_external_id
                     )[0]
                     if 'errors' in return_item:
                         if return_item['errors']:
