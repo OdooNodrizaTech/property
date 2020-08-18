@@ -34,19 +34,21 @@ class PropertyWayType(models.Model):
             if 'wayTypes' in response_json:
                 if len(response_json['wayTypes']) > 0:
                     for way_type in response_json['wayTypes']:
-                        if 'id' in way_type:
-                            way_type_ids = self.env['property.way.type'].search(
-                                [
-                                    ('source', '=', 'bbva'),
-                                    ('external_id', '=', str(way_type['id']))
-                                ]
-                            )
-                            if len(way_type_ids) == 0:
-                                # creamos
-                                vals = {
-                                    'external_id': str(way_type['id']),
-                                    'name': str(way_type['name'].encode('utf-8')),
-                                    'source': 'bbva'
-                                }
-                                # create
-                                self.env['property.way.type'].sudo().create(vals)
+                        if 'id' not in way_type:
+                            continue
+
+                        way_type_ids = self.env['property.way.type'].search(
+                            [
+                                ('source', '=', 'bbva'),
+                                ('external_id', '=', str(way_type['id']))
+                            ]
+                        )
+                        if len(way_type_ids) == 0:
+                            # creamos
+                            vals = {
+                                'external_id': str(way_type['id']),
+                                'name': str(way_type['name'].encode('utf-8')),
+                                'source': 'bbva'
+                            }
+                            # create
+                            self.env['property.way.type'].sudo().create(vals)

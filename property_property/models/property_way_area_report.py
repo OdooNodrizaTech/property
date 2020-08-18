@@ -54,11 +54,10 @@ class PropertyWayAreaReport(models.Model):
         self.ensure_one()
         tsec = False
         url = 'https://www.bbva.es/ASO/TechArchitecture/grantingTicketsOauth/V01/'
+        key = self.env['ir.config_parameter'].sudo().get_param('bbva_authorization_key')
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic %s' % self.env['ir.config_parameter'].sudo().get_param(
-                'bbva_authorization_key'
-            )
+            'Authorization': 'Basic %s' % key
         }
         data_obj = {
             'grant_type': 'client_credentials'
@@ -75,6 +74,7 @@ class PropertyWayAreaReport(models.Model):
     def action_check(self, tsec):
         self.ensure_one()
         current_date = datetime.now()
+        model_p_w_a_r_d = 'property.way.area.report.detail'
         # return
         return_item = {
             'errors': False,
@@ -82,7 +82,10 @@ class PropertyWayAreaReport(models.Model):
             'error': ''
         }
         # requests
-        url = 'https://www.bbva.es/ASO/financialPropertyInformation/V01/getPropertyAreaReport/'
+        url = 'https://%s/ASO/financialPropertyInformation/V01/%s/' % (
+            'www.bbva.es',
+            'getPropertyAreaReport'
+        )
         body_obj = {
             "location": {
                 "latitude": str(self.property_way_id.latitude),
@@ -102,51 +105,58 @@ class PropertyWayAreaReport(models.Model):
         if response.status_code == 200:
             response_json = json.loads(response.text)
             if 'flatReport' in response_json:
+                flatReport = response_json['flatReport']
                 # total
-                if 'total' in response_json['flatReport']:
-                    self.total = response_json['flatReport']['total']
+                if 'total' in flatReport:
+                    self.total = flatReport['total']
                 # averageValue
-                if 'averageValue' in response_json['flatReport']:
-                    if 'amount' in response_json['flatReport']['averageValue']:
-                        self.average_value = response_json['flatReport']['averageValue']['amount']
+                if 'averageValue' in flatReport:
+                    if 'amount' in flatReport['averageValue']:
+                        self.average_value = flatReport['averageValue']['amount']
                 # averageSurfaceArea
-                if 'averageSurfaceArea' in response_json['flatReport']:
-                    self.average_surface_area = response_json['flatReport']['averageSurfaceArea']
+                if 'averageSurfaceArea' in flatReport:
+                    self.average_surface_area = flatReport['averageSurfaceArea']
                 # percentage
-                if 'percentage' in response_json['flatReport']:
-                    self.percentage = response_json['flatReport']['percentage']
+                if 'percentage' in flatReport:
+                    self.percentage = flatReport['percentage']
                 # bedroomsReport
-                if 'bedroomsReport' in response_json['flatReport']:
-                    if len(response_json['flatReport']['bedroomsReport']) > 0:
-                        for bedrooms_report_item in response_json['flatReport']['bedroomsReport']:
-                            if 'bedroomsNumber' in bedrooms_report_item:
-                                # beedroom_number
-                                beedroom_number = int(bedrooms_report_item['bedroomsNumber'])
-                                # search
-                                ids = self.env['property.way.area.report.detail'].search(
-                                    [
-                                        ('property_way_area_report_id', '=', self.id),
-                                        ('beedroom_number', '=', beedroom_number)
-                                    ]
-                                )
-                                if len(ids) == 0:
-                                    # vals
-                                    vals = {
-                                        'property_way_area_report_id': self.id,
-                                        'beedroom_number': beedroom_number
-                                    }
-                                    # averageSurfaceArea
-                                    if 'averageSurfaceArea' in bedrooms_report_item:
-                                        vals['average_surface'] = bedrooms_report_item['averageSurfaceArea']
-                                    # averagePrice
-                                    if 'averagePrice' in bedrooms_report_item:
-                                        if 'amount' in bedrooms_report_item['averagePrice']:
-                                            vals['average_price'] = bedrooms_report_item['averagePrice']['amount']
-                                    # percentage
-                                    if 'percentage' in bedrooms_report_item:
-                                        vals['percentage'] = bedrooms_report_item['percentage']
-                                    # create
-                                    self.env['property.way.area.report.detail'].sudo().create(vals)
+                if 'bedroomsReport' in flatReport:
+                    bedroomsReport = flatReport['bedroomsReport']
+                    if len(bedroomsReport) > 0:
+                        for bedroom_item in bedroomsReport:
+                            if 'bedroomsNumber' not in bedroom_item:
+                                continue
+
+                            # beedroom_number
+                            beedroom_number = int(bedroom_item['bedroomsNumber'])
+                            # search
+                            ids = self.env[model_p_w_a_r_d].search(
+                                [
+                                    ('property_way_area_report_id', '=', self.id),
+                                    ('beedroom_number', '=', beedroom_number)
+                                ]
+                            )
+                            if len(ids) == 0:
+                                # vals
+                                vals = {
+                                    'property_way_area_report_id': self.id,
+                                    'beedroom_number': beedroom_number
+                                }
+                                # averageSurfaceArea
+                                if 'averageSurfaceArea' in bedroom_item:
+                                    vals[
+                                        'average_surface'
+                                    ] = bedroom_item['averageSurfaceArea']
+                                # averagePrice
+                                if 'averagePrice' in bedroom_item:
+                                    averagePrice = bedroom_item['averagePrice']
+                                    if 'amount' in averagePrice:
+                                        vals['average_price'] = averagePrice['amount']
+                                # percentage
+                                if 'percentage' in bedroom_item:
+                                    vals['percentage'] = bedroom_item['percentage']
+                                # create
+                                self.env[model_p_w_a_r_d].sudo().create(vals)
         # update date_last_check + total_build_units
         self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
@@ -169,7 +179,11 @@ class PropertyWayAreaReport(models.Model):
                 if area_report_ids:
                     way_ids = self.env['property.way'].search(
                         [
-                            ('id', 'not in', area_report_ids.mapped('property_way_id').ids),
+                            (
+                                'id',
+                                'not in',
+                                area_report_ids.mapped('property_way_id').ids
+                            ),
                             ('latitude', '!=', False),
                             ('longitude', '!=', False)
                         ]

@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=Consulta_DNPRC
+# https://ovc.catastro.meh.es/
+# /ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=Consulta_DNPRC
 
 from odoo import fields, models
 

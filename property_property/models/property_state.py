@@ -49,6 +49,8 @@ class PropertyState(models.Model):
     def action_get_municipalities(self):
         self.ensure_one()
         current_date = datetime.now()
+        model_p_m = 'property.municipality'
+        key_e_id = 'external_id'
         # return
         return_item = {
             'errors': False,
@@ -84,9 +86,13 @@ class PropertyState(models.Model):
                         len(municipality_ids)
                     ))
                     # request
-                    url = 'https://www.bbva.es/ASO/streetMap/V02/provinces/%s/municipalities/' % self.external_id
+                    url = 'https://%s/provinces/%s/municipalities/' % (
+                        'www.bbva.es/ASO/streetMap/V02',
+                        self.external_id
+                    )
+                    m_id_name = municipality_id.name
                     payload = {
-                        '$filter': '(name=='+str(municipality_id.name.encode('utf-8'))+')'
+                        '$filter': '(name=='+str(m_id_name.encode('utf-8'))+')'
                     }
                     response = requests.get(url, params=payload)
                     if response.status_code == 200:
@@ -95,32 +101,41 @@ class PropertyState(models.Model):
                             for province in response_json['provinces']:
                                 if 'municipalities' in province:
                                     for municipality in province['municipalities']:
-                                        municipality_ids2 = self.env['property.municipality'].search(
+                                        municipality_ids2 = self.env[model_p_m].search(
                                             [
                                                 ('property_state_id', '=', self.id),
-                                                ('external_id', '=', str(municipality['id']))
+                                                (key_e_id, '=', str(municipality['id']))
                                             ]
                                         )
                                         if len(municipality_ids2) == 0:
                                             # creamos
+                                            m_name = municipality['name']
                                             vals = {
                                                 'property_state_id': self.id,
                                                 'external_id': str(municipality['id']),
-                                                'name': str(municipality['name'].encode('utf-8')),
+                                                'name': str(m_name.encode('utf-8')),
                                                 'source': 'bbva',
                                                 'total_towns': 0
                                             }
                                             # location
                                             if 'location' in municipality:
-                                                if 'value' in municipality['location']:
-                                                    location_value = municipality['location']['value'].replace(',', '.').split(';')
+                                                location = municipality['location']
+                                                if 'value' in location:
+                                                    value = location['value']
+                                                    l_value = value.replace(',', '.')
+                                                    l_value = l_value.split(';')
                                                     # _logger.info(location_value)
-                                                    vals['latitude'] = str(location_value[1])
-                                                    vals['longitude'] = str(location_value[0].replace('-.', '-0.'))
+                                                    vals['latitude'] = str(l_value[1])
+                                                    l0 = l_value[0]
+                                                    l0 = l0.replace('-.', '-0.')
+                                                    vals['longitude'] = str(l0)
                                             # create
-                                            municipality_obj = self.env['property.municipality'].sudo().create(vals)
+                                            m_obj = self.env[
+                                                model_p_m
+                                            ].sudo().create(vals)
                                             # update
-                                            municipality_id.property_municipality_id = municipality_obj.id
+                                            m_id = municipality_id
+                                            m_id.property_municipality_id = m_obj.id
                         # Sleep 1 second to prevent error (if request)
                         time.sleep(1)
                     else:
@@ -166,10 +181,12 @@ class PropertyState(models.Model):
                         }
                         # location
                         if 'location' in province:
-                            if 'value' in province['location']:
-                                location_value = province['location']['value'].split(';')
-                                vals['latitude'] = str(location_value[0])
-                                vals['longitude'] = str(location_value[1])
+                            location = province['location']
+                            if 'value' in location:
+                                value = location['value']
+                                l_value = value.split(';')
+                                vals['latitude'] = str(l_value[0])
+                                vals['longitude'] = str(l_value[1])
                         # create
                         self.env['property.state'].sudo().create(vals)
         else:

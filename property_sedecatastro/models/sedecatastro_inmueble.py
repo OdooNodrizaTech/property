@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-# https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=Consulta_DNPRC
+# https://ovc.catastro.meh.es/
+# /ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?op=Consulta_DNPRC
 import logging
 from odoo import api, fields, models, _
 import requests
@@ -89,6 +90,7 @@ class SedecatastroInmueble(models.Model):
     def action_get_info_sedecatastro(self):
         self.ensure_one()
         current_date = datetime.now()
+        model_s_i_c = 'sedecatastro.inmueble.construccion'
         # return
         return_item = {
             'errors': False,
@@ -96,7 +98,10 @@ class SedecatastroInmueble(models.Model):
             'error': ''
         }
         # request
-        url = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/Consulta_DNPRC'
+        url = 'http://%s/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/%s' % (
+            'ovc.catastro.meh.es',
+            'Consulta_DNPRC'
+        )
         data_obj = {
             'Provincia': self.sedecatastro_provincia_id.np,
             'Municipio': self.sedecatastro_municipio_id.nm,
@@ -107,71 +112,92 @@ class SedecatastroInmueble(models.Model):
             xmltodict_response = xmltodict.parse(response.text)
             inmuebles = json.loads(json.dumps(xmltodict_response))
             if 'consulta_dnp' in inmuebles:
-                if 'control' in inmuebles['consulta_dnp']:
-                    if inmuebles['consulta_dnp']['control']['cudnp'] == '1':
+                consulta_dnp = inmuebles['consulta_dnp']
+                if 'control' in consulta_dnp:
+                    if consulta_dnp['control']['cudnp'] == '1':
                         # inmueble y toda la info
-                        if 'bico' in inmuebles['consulta_dnp']:
+                        if 'bico' in consulta_dnp:
+                            bico = consulta_dnp['bico']
                             _logger.info(
                                 _('ok, es solo 1 inmueble con la info completa')
                             )
-                            if 'bi' in inmuebles['consulta_dnp']['bico']:
+                            if 'bi' in bico:
+                                bi = bico['bi']
                                 # ldt
-                                self.ldt = str(inmuebles['consulta_dnp']['bico']['bi']['ldt'].encode('utf-8'))
+                                self.ldt = str(bi['ldt'].encode('utf-8'))
                                 # idbi
-                                if 'idbi' in inmuebles['consulta_dnp']['bico']['bi']:
-                                    self.idbi_cn = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['cn'])
+                                if 'idbi' in bi:
+                                    idbi = bi['idbi']
+                                    self.idbi_cn = str(idbi['cn'])
                                     # rc
-                                    if 'rc' in inmuebles['consulta_dnp']['bico']['bi']['idbi']:
-                                        self.rc_pc1 = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['pc1'])
-                                        self.rc_pc2 = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['pc2'])
-                                        self.rc_car = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['car'])
-                                        self.rc_cc1 = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['cc1'])
-                                        self.rc_cc2 = str(inmuebles['consulta_dnp']['bico']['bi']['idbi']['rc']['cc2'])
+                                    if 'rc' in idbi:
+                                        rc = idbi['rc']
+                                        self.rc_pc1 = str(rc['pc1'])
+                                        self.rc_pc2 = str(rc['pc2'])
+                                        self.rc_car = str(rc['car'])
+                                        self.rc_cc1 = str(rc['cc1'])
+                                        self.rc_cc2 = str(rc['cc2'])
                                 # debi
-                                if 'debi' in inmuebles['consulta_dnp']['bico']['bi']:
+                                if 'debi' in bi:
+                                    debi = bi['debi']
                                     # luso
-                                    if 'luso' in inmuebles['consulta_dnp']['bico']['bi']['debi']:
-                                        self.debi_luso = str(inmuebles['consulta_dnp']['bico']['bi']['debi']['luso'].encode('utf-8'))
+                                    if 'luso' in debi:
+                                        luso = debi['luso']
+                                        self.debi_luso = str(luso.encode('utf-8'))
                                     # sfc
-                                    if 'sfc' in inmuebles['consulta_dnp']['bico']['bi']['debi']:
-                                        self.debi_sfc = int(inmuebles['consulta_dnp']['bico']['bi']['debi']['sfc'])
+                                    if 'sfc' in debi:
+                                        sfc = debi['sfc']
+                                        self.debi_sfc = int(sfc)
                                     # cpt
-                                    if 'cpt' in inmuebles['consulta_dnp']['bico']['bi']['debi']:
-                                        self.debi_cpt = str(inmuebles['consulta_dnp']['bico']['bi']['debi']['cpt'].replace(',', '.'))
+                                    if 'cpt' in debi:
+                                        cpt = debi['cpt']
+                                        self.debi_cpt = str(cpt.replace(',', '.'))
                                     # ant
-                                    if 'ant' in inmuebles['consulta_dnp']['bico']['bi']['debi']:
-                                        self.debi_ant = int(inmuebles['consulta_dnp']['bico']['bi']['debi']['ant'])
+                                    if 'ant' in debi:
+                                        ant = debi['ant']
+                                        self.debi_ant = int(ant)
                                 # lcons
-                                if 'lcons' in inmuebles['consulta_dnp']['bico']:
-                                    if 'cons' in inmuebles['consulta_dnp']['bico']['lcons']:
+                                if 'lcons' in bico:
+                                    lcons = bico['lcons']
+                                    if 'cons' in lcons:
                                         # fix multi items
-                                        if type(inmuebles['consulta_dnp']['bico']['lcons']['cons']) == dict:
-                                            inmuebles['consulta_dnp']['bico']['lcons']['cons'] = [inmuebles['consulta_dnp']['bico']['lcons']['cons']]
+                                        if type(lcons['cons']) == dict:
+                                            lcons['cons'] = [lcons['cons']]
                                         # for
-                                        for cons_item in inmuebles['consulta_dnp']['bico']['lcons']['cons']:
+                                        for con in lcons['cons']:
                                             # cals
                                             vals = {
                                                 'sedecatastro_inmueble_id': self.id,
-                                                'lcd': str(cons_item['lcd'])
+                                                'lcd': str(con['lcd'])
                                             }
                                             # dt
-                                            if 'dt' in cons_item:
-                                                if 'lourb' in cons_item['dt']:
-                                                    if 'loint' in cons_item['dt']['lourb']:
+                                            if 'dt' in con:
+                                                dt = con['dt']
+                                                if 'lourb' in dt:
+                                                    lourb = dt['lourb']
+                                                    if 'loint' in lourb:
+                                                        loint = lourb['loint']
                                                         # es
-                                                        if 'es' in cons_item['dt']['lourb']['loint']:
-                                                            vals['dt_lourb_loint_es'] = int(cons_item['dt']['lourb']['loint']['es'])
+                                                        if 'es' in loint:
+                                                            vals[
+                                                                'dt_lourb_loint_es'
+                                                            ] = int(loint['es'])
                                                         # pt
-                                                        if 'pt' in cons_item['dt']['lourb']['loint']:
-                                                            vals['dt_lourb_loint_pt'] = str(cons_item['dt']['lourb']['loint']['pt'])
+                                                        if 'pt' in loint:
+                                                            vals[
+                                                                'dt_lourb_loint_pt'
+                                                            ] = str(loint['pt'])
                                                         # pu
-                                                        if 'pu' in cons_item['dt']['lourb']['loint']:
-                                                            vals['dt_lourb_loint_pu'] = str(cons_item['dt']['lourb']['loint']['pu'])
+                                                        if 'pu' in loint:
+                                                            vals[
+                                                                'dt_lourb_loint_pu'
+                                                            ] = str(loint['pu'])
                                             # dfcons
-                                            if 'dfcons' in cons_item:
-                                                vals['dfcons_stl'] = int(cons_item['dfcons']['stl'])
+                                            if 'dfcons' in con:
+                                                dfcons = con['dfcons']
+                                                vals['dfcons_stl'] = int(dfcons['stl'])
                                             # create
-                                            self.env['sedecatastro.inmueble.construccion'].sudo().create(vals)
+                                            self.env[model_s_i_c].sudo().create(vals)
                         # finall_thins
                         self.full = True
                         self.date_last_check = current_date.strftime("%Y-%m-%d")

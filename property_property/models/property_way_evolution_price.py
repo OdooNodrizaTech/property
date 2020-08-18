@@ -46,11 +46,10 @@ class PropertyWayEvolutionPrice(models.Model):
         self.ensure_one()
         tsec = False
         url = 'https://www.bbva.es/ASO/TechArchitecture/grantingTicketsOauth/V01/'
+        key = self.env['ir.config_parameter'].sudo().get_param('bbva_authorization_key')
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic %s' % self.env['ir.config_parameter'].sudo().get_param(
-                'bbva_authorization_key'
-            )
+            'Authorization': 'Basic %s' % key
         }
         data_obj = {
             'grant_type': 'client_credentials'
@@ -67,6 +66,8 @@ class PropertyWayEvolutionPrice(models.Model):
     def action_check(self, tsec):
         self.ensure_one()
         current_date = datetime.now()
+        model_p_w_e_p_d = 'property.way.evolution.price.detail'
+        key_p_w_e_p_id = 'property_way_evolution_price_id'
         # return
         return_item = {
             'errors': False,
@@ -74,7 +75,10 @@ class PropertyWayEvolutionPrice(models.Model):
             'error': ''
         }
         # requests
-        url = 'https://www.bbva.es/ASO/financialPropertyInformation/V01/getEvolutionPriceReport/'
+        url = 'https://%s/ASO/financialPropertyInformation/V01/%s/' % (
+            'www.bbva.es',
+            'getEvolutionPriceReport'
+        )
         body_obj = {
             "location": {
                 "latitude": str(self.property_way_id.latitude),
@@ -101,38 +105,47 @@ class PropertyWayEvolutionPrice(models.Model):
             if 'report' in response_json:
                 if len(response_json['report']) > 0:
                     for report_item in response_json['report']:
-                        if 'year' in report_item:
-                            if 'month' in report_item:
-                                price_detail_ids = self.env['property.way.evolution.price.detail'].search(
-                                    [
-                                        ('property_way_evolution_price_id', '=', self.id),
-                                        ('month', '=', int(report_item['month'])),
-                                        ('year', '=', int(report_item['year']))
-                                    ]
-                                )
-                                if len(price_detail_ids) == 0:
-                                    # vals
-                                    vals = {
-                                        'property_way_evolution_price_id': self.id,
-                                        'month': int(report_item['month']),
-                                        'year': int(report_item['year']),
-                                    }
-                                    # homesSold
-                                    if 'homesSold' in report_item:
-                                        vals['homes_sold'] = int(report_item['homesSold'])
-                                    # averageSurfaceArea
-                                    if 'averageSurfaceArea' in report_item:
-                                        vals['average_surface_area'] = report_item['averageSurfaceArea']
-                                    # averagePriceBySquareMeter
-                                    if 'averagePriceBySquareMeter' in report_item:
-                                        if 'amount' in report_item['averagePriceBySquareMeter']:
-                                            vals['average_price_by_sqare_meter'] = report_item['averagePriceBySquareMeter']['amount']
-                                    # averagePrice
-                                    if 'averagePrice' in report_item:
-                                        if 'amount' in report_item['averagePrice']:
-                                            vals['average_price'] = report_item['averagePrice']['amount']
-                                    # create
-                                    self.env['property.way.evolution.price.detail'].sudo().create(vals)
+                        if 'year' not in report_item:
+                            continue
+
+                        if 'month' not in report_item:
+                            continue
+
+                        price_detail_ids = self.env[model_p_w_e_p_d].search(
+                            [
+                                (key_p_w_e_p_id, '=', self.id),
+                                ('month', '=', int(report_item['month'])),
+                                ('year', '=', int(report_item['year']))
+                            ]
+                        )
+                        if len(price_detail_ids) == 0:
+                            # vals
+                            vals = {
+                                key_p_w_e_p_id: self.id,
+                                'month': int(report_item['month']),
+                                'year': int(report_item['year']),
+                            }
+                            # homesSold
+                            if 'homesSold' in report_item:
+                                vals['homes_sold'] = int(report_item['homesSold'])
+                            # averageSurfaceArea
+                            if 'averageSurfaceArea' in report_item:
+                                averageSA = report_item['averageSurfaceArea']
+                                vals['average_surface_area'] = averageSA
+                            # averagePriceBySquareMeter
+                            if 'averagePriceBySquareMeter' in report_item:
+                                averagePBSM = report_item['averagePriceBySquareMeter']
+                                if 'amount' in averagePBSM:
+                                    vals[
+                                        'average_price_by_sqare_meter'
+                                    ] = averagePBSM['amount']
+                            # averagePrice
+                            if 'averagePrice' in report_item:
+                                averagePrice = report_item['averagePrice']
+                                if 'amount' in averagePrice:
+                                    vals['average_price'] = averagePrice['amount']
+                            # create
+                            self.env[model_p_w_e_p_d].sudo().create(vals)
         # update date_last_check + total_build_units
         self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
@@ -141,23 +154,40 @@ class PropertyWayEvolutionPrice(models.Model):
     @api.model
     def cron_check_ways_evolution_price(self):
         # def
-        home_type_ids = self.env['property.home.type'].search([('id', '>', 0)])
-        transaction_type_ids = self.env['property.transaction.type'].search([('id', '>', 0)])
+        model_p_w_e_p = 'property.way.evolution.price'
+        key_p_t_t_id = 'property_transaction_type_id'
+        # search
+        home_type_ids = self.env['property.home.type'].search(
+            [
+                ('id', '>', 0)
+            ]
+        )
+        transaction_type_ids = self.env['property.transaction.type'].search(
+            [
+                ('id', '>', 0)
+            ]
+        )
         # first_create property.way.evolution.price
         if home_type_ids:
             for home_type_id in home_type_ids:
                 if transaction_type_ids:
                     for transaction_type_id in transaction_type_ids:
-                        evolution_price_ids = self.env['property.way.evolution.price'].search(
+                        evolution_price_ids = self.env[model_p_w_e_p].search(
                             [
                                 ('property_home_type_id', '=', home_type_id.id),
-                                ('property_transaction_type_id', '=', transaction_type_id.id)
+                                (key_p_t_t_id, '=', transaction_type_id.id)
                             ]
                         )
                         if evolution_price_ids:
                             way_ids = self.env['property.way'].search(
                                 [
-                                    ('id', 'not in', evolution_price_ids.mapped('property_way_id').ids),
+                                    (
+                                        'id',
+                                        'not in',
+                                        evolution_price_ids.mapped(
+                                            'property_way_id'
+                                        ).ids
+                                    ),
                                     ('latitude', '!=', False),
                                     ('longitude', '!=', False)
                                 ]
@@ -175,13 +205,13 @@ class PropertyWayEvolutionPrice(models.Model):
                                 vals = {
                                     'property_way_id': way_id.id,
                                     'property_home_type_id': home_type_id.id,
-                                    'property_transaction_type_id': transaction_type_id.id,
+                                    key_p_t_t_id: transaction_type_id.id,
                                     'radius': 500,
                                     'source': 'bbva'
                                 }
-                                self.env['property.way.evolution.price'].sudo().create(vals)
+                                self.env[model_p_w_e_p].sudo().create(vals)
         # now check all property.way.evolution.price
-        evolution_price_ids = self.env['property.way.evolution.price'].search(
+        evolution_price_ids = self.env[model_p_w_e_p].search(
             [
                 ('full', '=', False)
             ],

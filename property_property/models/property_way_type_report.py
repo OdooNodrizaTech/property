@@ -35,11 +35,10 @@ class PropertyWayTypeReport(models.Model):
         self.ensure_one()
         tsec = False
         url = 'https://www.bbva.es/ASO/TechArchitecture/grantingTicketsOauth/V01/'
+        key = self.env['ir.config_parameter'].sudo().get_param('bbva_authorization_key')
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic %s' % self.env['ir.config_parameter'].sudo().get_param(
-                'bbva_authorization_key'
-            )
+            'Authorization': 'Basic %s' % key
         }
         data_obj = {
             'grant_type': 'client_credentials'
@@ -56,6 +55,13 @@ class PropertyWayTypeReport(models.Model):
     def action_check(self, tsec):
         self.ensure_one()
         current_date = datetime.now()
+        model_p_w_t_r_d = 'property.way.type.report.detail'
+        key_e_id = 'external_id'
+        key_p_w_t_r_id = 'property_way_type_report_id'
+        key_p_l_id = 'property_level_id'
+        key_d_p_d_f_o = 'detached_property_distribution_free_offer'
+        key_d_p_d_b_o = 'detached_property_distribution_bank_offer'
+        key_d_p_d_t = 'detached_property_distribution_total'
         # return
         return_item = {
             'errors': False,
@@ -63,7 +69,10 @@ class PropertyWayTypeReport(models.Model):
             'error': ''
         }
         # requests
-        url = 'https://www.bbva.es/ASO/financialPropertyInformation/V01/getPropertyTypeReport/'
+        url = 'https://%s/ASO/financialPropertyInformation/V01/%s/' % (
+            'www.bbva.es',
+            'getPropertyTypeReport'
+        )
         body_obj = {
             "location": {
                 "latitude": str(self.property_way_id.latitude),
@@ -80,58 +89,68 @@ class PropertyWayTypeReport(models.Model):
             response_json = json.loads(response.text)
             if 'levelDistribution' in response_json:
                 if len(response_json['levelDistribution']) > 0:
-                    for level_distribution_item in response_json['levelDistribution']:
-                        if 'level' in level_distribution_item:
-                            if 'id' in level_distribution_item['level']:
-                                level_ids = self.env['property.level'].search(
-                                    [
-                                        ('external_id', '=', str(level_distribution_item['level']['id']))
-                                    ]
-                                )
-                                if level_ids:
-                                    level_id = level_ids[0]
-                                    # vals
-                                    vals = {
-                                        'property_way_type_report_id': self.id,
-                                        'property_level_id': level_id.id
-                                    }
-                                    # search
-                                    report_detail_ids = self.env['property.way.type.report.detail'].search(
-                                        [
-                                            ('property_way_type_report_id', '=', self.id),
-                                            ('property_level_id', '=', vals['property_level_id'])
-                                        ]
-                                    )
-                                    if len(report_detail_ids) == 0:
-                                        # name
-                                        if 'name' in level_distribution_item:
-                                            vals['name'] = str(level_distribution_item['name'])
-                                        # flatDistribution
-                                        if 'flatDistribution' in level_distribution_item:
-                                            # freeOffer
-                                            if 'freeOffer' in level_distribution_item['flatDistribution']:
-                                                vals['flat_distribution_free_offer'] = level_distribution_item['flatDistribution']['freeOffer']
-                                            # bankOffer
-                                            if 'bankOffer' in level_distribution_item['flatDistribution']:
-                                                vals['flat_distribution_bank_offer'] = level_distribution_item['flatDistribution']['bankOffer']
-                                            # total
-                                            if 'total' in level_distribution_item['flatDistribution']:
-                                                vals['flat_distribution_total'] = level_distribution_item['flatDistribution']['total']
-                                        # detachedPropertyDistribution
-                                        if 'detachedPropertyDistribution' in level_distribution_item:
-                                            # freeOffer
-                                            if 'freeOffer' in level_distribution_item['detachedPropertyDistribution']:
-                                                vals['detached_property_distribution_free_offer'] = \
-                                                    level_distribution_item['detachedPropertyDistribution']['freeOffer']
-                                            # bankOffer
-                                            if 'bankOffer' in level_distribution_item['detachedPropertyDistribution']:
-                                                vals['detached_property_distribution_bank_offer'] = \
-                                                    level_distribution_item['detachedPropertyDistribution']['bankOffer']
-                                            # total
-                                            if 'total' in level_distribution_item['detachedPropertyDistribution']:
-                                                vals['detached_property_distribution_total'] = level_distribution_item['detachedPropertyDistribution']['total']
-                                        # create
-                                        self.env['property.way.type.report.detail'].sudo().create(vals)
+                    for ld_item in response_json['levelDistribution']:
+                        if 'level' not in ld_item:
+                            continue
+
+                        if 'id' not in ld_item['level']:
+                            continue
+
+                        level_ids = self.env['property.level'].search(
+                            [
+                                (key_e_id, '=', str(ld_item['level']['id']))
+                            ]
+                        )
+                        if level_ids:
+                            level_id = level_ids[0]
+                            # vals
+                            vals = {
+                                key_p_w_t_r_id: self.id,
+                                key_p_l_id: level_id.id
+                            }
+                            # search
+                            detail_ids = self.env[model_p_w_t_r_d].search(
+                                [
+                                    (key_p_w_t_r_id, '=', self.id),
+                                    (key_p_l_id, '=', vals['property_level_id'])
+                                ]
+                            )
+                            if len(detail_ids) == 0:
+                                # name
+                                if 'name' in ld_item:
+                                    vals['name'] = str(ld_item['name'])
+                                # flatDistribution
+                                if 'flatDistribution' in ld_item:
+                                    flatDistribution = ld_item['flatDistribution']
+                                    # freeOffer
+                                    if 'freeOffer' in flatDistribution:
+                                        vals[
+                                            'flat_distribution_free_offer'
+                                        ] = flatDistribution['freeOffer']
+                                    # bankOffer
+                                    if 'bankOffer' in flatDistribution:
+                                        vals[
+                                            'flat_distribution_bank_offer'
+                                        ] = flatDistribution['bankOffer']
+                                    # total
+                                    if 'total' in flatDistribution:
+                                        vals[
+                                            'flat_distribution_total'
+                                        ] = flatDistribution['total']
+                                # detachedPropertyDistribution
+                                if 'detachedPropertyDistribution' in ld_item:
+                                    d_p_d = ld_item['detachedPropertyDistribution']
+                                    # freeOffer
+                                    if 'freeOffer' in d_p_d:
+                                        vals[key_d_p_d_f_o] = d_p_d['freeOffer']
+                                    # bankOffer
+                                    if 'bankOffer' in d_p_d:
+                                        vals[key_d_p_d_b_o] = d_p_d['bankOffer']
+                                    # total
+                                    if 'total' in d_p_d:
+                                        vals[key_d_p_d_t] = d_p_d['total']
+                                # create
+                                self.env[model_p_w_t_r_d].sudo().create(vals)
         # update date_last_check + total_build_units
         self.date_last_check = current_date.strftime("%Y-%m-%d")
         # return
