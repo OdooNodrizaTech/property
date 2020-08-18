@@ -134,9 +134,8 @@ class PropertyState(models.Model):
                                                 model_p_m
                                             ].sudo().create(vals)
                                             # update
-                                            municipality_id[
-                                                'property_municipality_id'
-                                            ] = municipality_obj.id
+                                            m_id = municipality_id
+                                            m_id.property_municipality_id = m_obj.id
                         # Sleep 1 second to prevent error (if request)
                         time.sleep(1)
                     else:

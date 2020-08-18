@@ -101,12 +101,12 @@ class PropertyNumber(models.Model):
             )
             if building_type_ids:
                 for type_id in building_type_ids:
-                    bt_id_external_id[str(type_id.external_id)] = building_type_id.id
+                    bt_id_external_id[str(type_id.external_id)] = type_id.id
         # requests
         total_properties = 0
         url = '%s/%s/municipalities/%s/towns/%s/ways/%s/numbers/%s/' % (
             'https://www.bbva.es/ASO/streetMap/V02/provinces',
-            p_m_idproperty_state_id.external_id,
+            p_m_id.property_state_id.external_id,
             p_m_id.external_id,
             self.property_way_id.property_town_id.external_id,
             self.property_way_id.external_id,
@@ -267,7 +267,7 @@ class PropertyNumber(models.Model):
                                                         ].sudo().create(type_vals)
                                                         # add_array
                                                         e_id = type_vals['external_id']
-                                                        building_type_id_external_id[
+                                                        bt_id_external_id[
                                                             e_id
                                                         ] = bt_obj.id
                                                     # check_if_exists and add

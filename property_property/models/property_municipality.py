@@ -296,6 +296,7 @@ class PropertyMunicipality(models.Model):
                             for province in response_json['provinces']:
                                 if 'municipalities' not in province:
                                     continue
+
                                 for municipality in province['municipalities']:
                                     if 'towns' not in municipality:
                                         continue
@@ -313,59 +314,79 @@ class PropertyMunicipality(models.Model):
                                         if town_ids:
                                             town_id = town_ids[0]
                                             # ways
-                                            if 'ways' in town:
-                                                for way in town['ways']:
-                                                    way_ids2 = self.env[model_p_w].search(
-                                                        [
-                                                            (key_p_t_id, '=', self.id),
-                                                            (key_e_id, '=', str(way['id']))
-                                                        ]
-                                                    )
-                                                    if len(way_ids2) == 0:
-                                                        # creamos
-                                                        vals = {
-                                                            key_p_t_id: town_id.id,
-                                                            key_e_id: str(way['id']),
-                                                            'name': str(way['name'].encode('utf-8')),
-                                                            'source': 'bbva'
-                                                        }
-                                                        # postalCode
-                                                        if 'postalCode' in way:
-                                                            vals['postal_code'] = str(way['postalCode'])
-                                                        # type
-                                                        if 'type' in way:
-                                                            if 'id' in way['type']:
-                                                                way_type_ids = self.env[model_p_w_t].search(
-                                                                    [
-                                                                        ('source', '=', 'bbva'),
-                                                                        (key_e_id, '=', str(way['type']['id']))
-                                                                    ]
-                                                                )
-                                                                if way_type_ids:
-                                                                    vals[key_p_w_t_id] = way_type_ids[0].id
-                                                        # latitude-longitude
-                                                        if 'location' in way:
-                                                            location = way['location']
-                                                            value = location['value']
-                                                            lv = value['value']
-                                                            lv = lv.replace(',','.')
-                                                            lv = lv.split(';')
-                                                            lv1 = str(lv[1])
-                                                            lv0 = lv[0]
-                                                            lv0 = lv0.replace(
-                                                                '-.', '-0.'
+                                            if 'ways' not in town:
+                                                continue
+
+                                            for way in town['ways']:
+                                                way_ids2 = self.env[model_p_w].search(
+                                                    [
+                                                        (key_p_t_id, '=', self.id),
+                                                        (key_e_id, '=', str(way['id']))
+                                                    ]
+                                                )
+                                                if len(way_ids2) == 0:
+                                                    # creamos
+                                                    way_name = way['name']
+                                                    way_name = way_name.encode('utf-8')
+                                                    vals = {
+                                                        key_p_t_id: town_id.id,
+                                                        key_e_id: str(way['id']),
+                                                        'name': str(way_name),
+                                                        'source': 'bbva'
+                                                    }
+                                                    # postalCode
+                                                    if 'postalCode' in way:
+                                                        vals[
+                                                            'postal_code'
+                                                        ] = str(way['postalCode'])
+                                                    # type
+                                                    if 'type' in way:
+                                                        if 'id' in way['type']:
+                                                            wt_id = way['type']['id']
+                                                            way_type_ids = self.env[
+                                                                model_p_w_t
+                                                            ].search(
+                                                                [
+                                                                    (
+                                                                        'source',
+                                                                        '=',
+                                                                        'bbva'
+                                                                    ),
+                                                                    (
+                                                                        key_e_id,
+                                                                        '=',
+                                                                        str(wt_id)
+                                                                    )
+                                                                ]
                                                             )
-                                                            vals['latitude'] = lv1
-                                                            vals['longitude'] = lv0
-                                                        # create
-                                                        w_obj = self.env[
-                                                            model_p_w
-                                                        ].sudo().create(vals)
-                                                        # distritopostal_way_id
-                                                        way_id.property_way_id = \
-                                                            w_obj.id
-                                                        # total_ways
-                                                        total_ways += 1
+                                                            if way_type_ids:
+                                                                wt_0 = way_type_ids[0]
+                                                                vals[
+                                                                    key_p_w_t_id
+                                                                ] = wt_0[0].id
+                                                    # latitude-longitude
+                                                    if 'location' in way:
+                                                        location = way['location']
+                                                        value = location['value']
+                                                        lv = value['value']
+                                                        lv = lv.replace(',', '.')
+                                                        lv = lv.split(';')
+                                                        lv1 = str(lv[1])
+                                                        lv0 = lv[0]
+                                                        lv0 = lv0.replace(
+                                                            '-.', '-0.'
+                                                        )
+                                                        vals['latitude'] = lv1
+                                                        vals['longitude'] = lv0
+                                                    # create
+                                                    w_obj = self.env[
+                                                        model_p_w
+                                                    ].sudo().create(vals)
+                                                    # distritopostal_way_id
+                                                    way_id.property_way_id = \
+                                                        w_obj.id
+                                                    # total_ways
+                                                    total_ways += 1
                         # Sleep 1 second to prevent error (if request)
                         time.sleep(1)
                     else:

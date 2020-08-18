@@ -191,10 +191,10 @@ class PropertyProperty(models.Model):
                                             if 'stair' in bu:
                                                 vals['stair'] = str(bu['stair'])
                                             # floor
-                                            if 'floor'in build_unit:
+                                            if 'floor' in bu:
                                                 vals['floor'] = str(bu['floor'])
                                             # door
-                                            if 'door' in build_unit:
+                                            if 'door' in bu:
                                                 vals['door'] = str(bu['door'])
                                             # builtSurfaceArea
                                             if 'builtSurfaceArea' in bu:

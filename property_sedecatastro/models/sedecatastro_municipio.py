@@ -80,9 +80,8 @@ class SedecatastroMunicipio(models.Model):
             if 'consulta_callejero' in vias:
                 consulta_callejero = vias['consulta_callejero']
                 if 'callejero' in consulta_callejero:
-                    callejero = consulta_callejero['callejero']
-                    if 'calle' in callejero:
-                        calle = callejero['calle']
+                    if 'calle' in consulta_callejero['callejero']:
+                        calle = consulta_callejero['callejero']['calle']
                         # total_vias
                         if 'control' in consulta_callejero:
                             control = consulta_callejero['control']
